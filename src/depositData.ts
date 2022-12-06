@@ -131,10 +131,10 @@ import { ensureHexBuffer } from './utils';
   return JSON.stringify({
     pubkey: depositKey.toString('hex'),
     withdrawal_credentials: withdrawalCreds.toString('hex'),
-    deposit_message_root: depositMessageRoot.toString('hex'),
-    signature: sig.sig.toString('hex'),
-    deposit_data_root: depositDataRoot.toString('hex'),
     amount: amountGwei,
+    signature: sig.sig.toString('hex'),
+    deposit_message_root: depositMessageRoot.toString('hex'),
+    deposit_data_root: depositDataRoot.toString('hex'),
     fork_version: forkVersion.toString('hex'),
     network_name: networkName,
     deposit_cli_version: depositCliVersion,
