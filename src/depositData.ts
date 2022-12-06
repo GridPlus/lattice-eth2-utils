@@ -2,7 +2,7 @@ import { ByteVectorType, ContainerType, UintNumberType, } from '@chainsafe/ssz';
 import { sha256 } from '@noble/hashes/sha256';
 import { BN } from 'bn.js';
 import { Constants as SDKConstants, Client } from 'gridplus-sdk';
-import { ETH2_CONSTANTS } from './constants';
+import { DOMAINS, NETWORKS } from './constants';
 import { ensureHexBuffer } from './utils';
 
 /**
@@ -24,7 +24,7 @@ import { ensureHexBuffer } from './utils';
   const { 
     amountGwei=32000000000, 
     depositCliVersion='2.3.0',
-    info=ETH2_CONSTANTS.NETWORKS.MAINNET_GENESIS,
+    info=NETWORKS.MAINNET_GENESIS,
     withdrawalKey, 
   } = params;
   // Sanity checks
@@ -173,7 +173,7 @@ import { ensureHexBuffer } from './utils';
   // https://github.com/ethereum/staking-deposit-cli/blob/
   // e2a7c942408f7fc446b889097f176238e4a10a76/staking_deposit/utils/ssz.py#L42
   const depositDomain = Buffer.alloc(32);
-  ETH2_CONSTANTS.DOMAINS.DEPOSIT.copy(depositDomain, 0);
+  DOMAINS.DEPOSIT.copy(depositDomain, 0);
   forkDataRoot.slice(0, 28).copy(depositDomain, 4);
   return depositDomain;
 }
