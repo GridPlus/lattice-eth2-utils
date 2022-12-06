@@ -1,2 +1,2 @@
 export * as DepositData from './depositData';
-export * as ETH2Constants from './constants';
+export * as Constants from './constants';

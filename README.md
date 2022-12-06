@@ -39,12 +39,12 @@ const data = await DepositData.generate(client, path);
 By default, `DepositData.generate` will use the mainnet genesis version, but as more forks happen in the future this may change to the latest production network version. You can always change this by setting some `opts`:
 
 ```ts
-import { ETH2Constants } from 'lattice-eth2-utils';
+import { Constants } from 'lattice-eth2-utils';
 
 const opts = {
   networkName: 'myNetwork',
-  forkVersion: ETH2Constants.NETWORKS.MAINNET_GENESIS.forkVersion,
-  validatorsRoot: ETH2Constants.NETWORKS.MAINNET_GENESIS.validatorsRoot,
+  forkVersion: Constants.NETWORKS.MAINNET_GENESIS.forkVersion,
+  validatorsRoot: Constants.NETWORKS.MAINNET_GENESIS.validatorsRoot,
 };
 
 const data = await DepositData.generate(client, path, opts);
