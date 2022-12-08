@@ -2,8 +2,6 @@
   "name": "lattice-eth2-utils",
   "version": "0.1.2",
   "description": "ETH2 utils for use with the Lattice1 hardware wallet",
-  "main": "./dist/index.ts",
-  "types": "./dist/index.d.ts",
   "repository": "git@github.com:alex-miller-0/lattice-eth2-utils.git",
   "author": "Alex Miller <asmiller1989@gmail.com>",
   "license": "MIT",
@@ -14,8 +12,11 @@
     "clean": "rm -rf dist build",
     "postinstall": "npx patch-package"
   },
+  "main": "dist/index.ts",
+  "types": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "devDependencies": {
     "@types/node": "^18.11.11",
