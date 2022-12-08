@@ -1,6 +1,7 @@
 {
+  "type": "module",
   "name": "lattice-eth2-utils",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "ETH2 utils for use with the Lattice1 hardware wallet",
   "main": "src/index.ts",
   "repository": "git@github.com:alex-miller-0/lattice-eth2-utils.git",
