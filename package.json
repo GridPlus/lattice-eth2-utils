@@ -1,10 +1,7 @@
 {
-  "type": "module",
   "name": "lattice-eth2-utils",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "ETH2 utils for use with the Lattice1 hardware wallet",
-  "main": "./dist/index.ts",
-  "types": "./dist/index.d.ts",
   "repository": "git@github.com:alex-miller-0/lattice-eth2-utils.git",
   "author": "Alex Miller <asmiller1989@gmail.com>",
   "license": "MIT",
@@ -14,6 +11,8 @@
     "build": "tsc -p tsconfig.json",
     "clean": "rm -rf dist build"
   },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
