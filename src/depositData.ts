@@ -10,8 +10,8 @@ import { sha256 } from '@noble/hashes/sha256';
 import { BN } from 'bn.js';
 import { Constants as SDKConstants, Client } from 'gridplus-sdk';
 import { DOMAINS, NETWORKS } from './constants';
-import { ensureHexBuffer, buildDomain } from './utils';
- 
+import { ensureHexBuffer, buildSigningRoot } from './utils';
+  
 /**
  * Generate ETH deposit data for a given validator.
  * This requires a secure connection with a Lattice via `client`.
@@ -19,52 +19,52 @@ import { ensureHexBuffer, buildDomain } from './utils';
  * before deposit data can be formed.
  * 
  * @param client - Instance of GridPlus SDK, which is already connected/paired to a target Lattice.
- * @param depositPath - Array with up to five u32 indices representing BIP39 path.
- * @param req - Instance of `EthDepositDataReq` containing params to build the deposit data.
+ * @param path - Path of deposit/validator key. Array with up to five u32 indices representing BIP39 path.
+ * @param opts - Instance of `DepositDataOpts` containing params to build the deposit data.
  * @return JSON string containing deposit data for this validator.
  */
 export async function generate(
   client: Client,
-  depositPath: number[],
-  params: EthDepositDataReq
+  path: number[],
+  opts: DepositDataOpts
 ) : Promise<string> {
   const { 
     amountGwei=32000000000, 
     depositCliVersion='2.3.0',
-    info=NETWORKS.MAINNET_GENESIS,
+    networkInfo=NETWORKS.MAINNET_GENESIS,
     withdrawalKey, 
-  } = params;
+  } = opts;
   // Sanity checks
   // ---
-  if (!depositPath || !amountGwei || !info || !depositCliVersion) {
+  if (!path || !amountGwei || !networkInfo || !depositCliVersion) {
     throw new Error(
-      'One or more params missing from `req`: `depositPath`, `amountGwei`, `info`, `depositCliVersion`.'
+      'One or more params missing from `req`: `path`, `amountGwei`, `networkInfo`, `depositCliVersion`.'
     );
   }
   if (amountGwei < 0 || new BN(amountGwei).gte(new BN(2).pow(new BN(64)))) {
     throw new Error('`amountGwei` must be >0 and <UINT64_MAX')
   }
-  const { networkName, forkVersion, validatorsRoot } = info;
+  const { networkName, forkVersion, validatorsRoot } = networkInfo;
   if (!networkName) {
-    throw new Error('No `info.network` value found.');
+    throw new Error('No `networkName` value found in `networkInfo`.');
   }
   if (!forkVersion) {
-    throw new Error('No `info.forkVersion` value found.');
+    throw new Error('No `forkVersion` value found in `networkInfo`.');
   } else if (forkVersion.length !== 4) {
-    throw new Error('`info.forkVersion` must be a 4 byte Buffer.')
+    throw new Error('`forkVersion` must be a 4 byte Buffer.')
   }
   if (!validatorsRoot) {
-    throw new Error('No `info.validatorsRoot` value found.');
+    throw new Error('No `validatorsRoot` value found in `networkInfo`.');
   } else if (validatorsRoot.length !== 32) {
-    throw new Error('`info.validatorsRoot` must be a 32 byte Buffer.');
+    throw new Error('`validatorsRoot` must be a 32 byte Buffer.');
   }
   // Start building data. Items should be strings. Some can be copied directly.
   // ---
   // Get the depositor pubkey
   const getAddrFlag = SDKConstants.GET_ADDR_FLAGS.BLS12_381_G1_PUB;
-  const depositPubs = await client.getAddresses({ startPath: depositPath, flag: getAddrFlag });
-  const depositKey = Buffer.from(depositPubs[0]);
-
+  const depositPubs = await client.getAddresses({ startPath: path, flag: getAddrFlag });
+  const depositKey = ensureHexBuffer(depositPubs[0]);
+ 
   // If no withdrawalKey was passed, fetch the BLS one
   let withdrawalKeyBuf: Buffer;
   if (withdrawalKey) {
@@ -74,9 +74,9 @@ export async function generate(
     // Otherwise we should derive the corresponding withdrawal key.
     // The withdrawal path is just up one derivation index relative to deposit path.
     // See: https://eips.ethereum.org/EIPS/eip-2334
-    const withdrawalPath = depositPath.slice(0, depositPath.length-1);
+    const withdrawalPath = path.slice(0, path.length-1);
     const withdrawalPubs = await client.getAddresses({ startPath: withdrawalPath, flag: getAddrFlag});
-    withdrawalKeyBuf = Buffer.from(withdrawalPubs[0]);
+    withdrawalKeyBuf = ensureHexBuffer(withdrawalPubs[0]);
   }
   // We can now generate the withdrawal credentials
   const withdrawalCreds = getEthDepositWithdrawalCredentials(withdrawalKeyBuf);
@@ -94,24 +94,14 @@ export async function generate(
     amount: amountGwei,
   }));
   
-  // Build the signing root
-  // https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#compute_signing_root
-  const signingType = new ContainerType({
-    object_root: new ByteVectorType(32),
-    domain: new ByteVectorType(32),
-  });
-  const signingRoot = Buffer.from(signingType.hashTreeRoot({
-    object_root: depositMessageRoot,
-    domain: getEthDepositDomain(forkVersion, validatorsRoot),
-  }));
-  // Sign the root
+  // Sign the data
   const signReq = {
     data: {
-      signerPath: depositPath,
+      signerPath: path,
       curveType: SDKConstants.SIGNING.CURVES.BLS12_381_G2,
       hashType: SDKConstants.SIGNING.HASHES.NONE,
       encodingType: SDKConstants.SIGNING.ENCODINGS.ETH_DEPOSIT,
-      payload: signingRoot,
+      payload: buildSigningRoot(depositMessageRoot, DOMAINS.DEPOSIT, networkInfo),
       blsDst: SDKConstants.SIGNING.BLS_DST.BLS_DST_POP,
     }
   };
@@ -147,58 +137,42 @@ export async function generate(
     deposit_cli_version: depositCliVersion,
   });
 }
-
+ 
 /**
-* Export an encrypted keystore (private key) from the Lattice's active wallet.
-* The keystore is formatted according to EIP2335.
-* @param client - An instance of the `gridplus-sdk` `Client`
-* @param depositPath - The derivation path of the key to export
-* @param c - The PBKDF2 iteration count (default=262144)
-* @return - JSON-stringified encrypted keystore
-*/
+ * Export an encrypted keystore (private key) from the Lattice's active wallet.
+ * The keystore is formatted according to EIP2335.
+ * @param client - An instance of the `gridplus-sdk` `Client`
+ * @param path - Path for deposit/validator key. Array with up to five u32 indices representing BIP39 path.
+ * @param c - The PBKDF2 iteration count (default=262144)
+ * @return - JSON-stringified encrypted keystore
+ */
 export async function exportKeystore(
   client: Client,
-  depositPath: number[],
+  path: number[],
   c = 262144, // Default comes from EIP2335 example
 ): Promise<string> {
   const req = {
     schema: SDKConstants.ENC_DATA.SCHEMAS.BLS_KEYSTORE_EIP2335_PBKDF_V4,
     params: {
-      path: depositPath,
+      path: path,
       c,
     }
   };
   const encData = await client.fetchEncryptedData(req);
   return JSON.stringify(JSON.parse(encData.toString()));
 }
-
+ 
 /**
-* @internal
-* Generate domain data for an ETH deposit.
-* This is constructed out of a domain type (DEPOSIT) and a ForkData root.
-*/
-function getEthDepositDomain(
-  forkVersion: Buffer,
-  validatorsRoot: Buffer,
-): Buffer {
-  return buildDomain(
-    DOMAINS.DEPOSIT,
-    forkVersion,
-    validatorsRoot,
-  );
-}
-
-/**
-* @internal
-* Get the withdrawal credentials given a key.
-* There are currently two supported types of withdrawal:
-* - 0x00: BLS key used to withdraw
-* - 0x11: ETH1 key used to withdraw
-* 
-* @param withdrawalKey - Buffer containing either BLS withdrawal pubkey (48 bytes)
-*                        or Ethereum address (20 bytes)
-* @return 32-byte Buffer containing withdrawal credentials
-*/
+ * @internal
+ * Get the withdrawal credentials given a key.
+ * There are currently two supported types of withdrawal:
+ * - 0x00: BLS key used to withdraw
+ * - 0x11: ETH1 key used to withdraw
+ * 
+ * @param withdrawalKey - Buffer containing either BLS withdrawal pubkey (48 bytes)
+ *                        or Ethereum address (20 bytes)
+ * @return 32-byte Buffer containing withdrawal credentials
+ */
 function getEthDepositWithdrawalCredentials(
   withdrawalKey: Buffer, // BLS pubkey of mapped withdrawal key OR ETH1 address
 ): Buffer {

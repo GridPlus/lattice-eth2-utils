@@ -21,15 +21,15 @@ import { ByteVectorType, ContainerType, } from '@chainsafe/ssz';
  * @param domainType - Type of domain. Should be one of the values in `DOMAINS` (constants.ts)
  * @param forkVersion - Network/fork version on which to build the message
  * @param validatorsRoot - Root of the validator set (at `forkVersion`) on which to build the message
-*/
+ */
 export function buildDomain(
   domainType: Buffer, 
-  forkVersion: Buffer,
-  validatorsRoot: Buffer
+  networkInfo: NetworkInfo,
 ): Buffer {
-  if (forkVersion.length !== 4) {
+  const { forkVersion, validatorsRoot } = networkInfo;
+  if (!forkVersion || forkVersion.length !== 4) {
     throw new Error('`forkVersion` must be a 4-byte Buffer.');
-  } else if (validatorsRoot.length !== 32) {
+  } else if (!validatorsRoot || validatorsRoot.length !== 32) {
     throw new Error('`validatorsRoot` must be a 32-byte Buffer.');
   }
   const forkDataType = new ContainerType({
@@ -47,4 +47,32 @@ export function buildDomain(
   domainType.copy(domain, 0);
   forkDataRoot.slice(0, 28).copy(domain, 4);
   return domain;
+}
+
+/**
+ * Build a signing root for a message. `SigningData` definition:
+ * https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#signingdata
+ * @param objectRoot - Root of the object being signed
+ * @param domainType - Type of domain. Should be one of the values in `DOMAINS` (constants.ts)
+ * @param forkVersion - Network/fork version on which to build the message
+ * @param validatorsRoot - Root of the validator set (at `forkVersion`) on which to build the message
+ */
+export function buildSigningRoot(
+  objectRoot: Buffer,
+  domainType: Buffer,
+  networkInfo: NetworkInfo,
+): Buffer {
+  if (objectRoot.length !== 32) {
+    throw new Error('`objectRoot` must be a 32-byte Buffer.');
+  }
+  const signingType = new ContainerType({
+    object_root: new ByteVectorType(32),
+    domain: new ByteVectorType(32),
+  });
+  return Buffer.from(
+    signingType.hashTreeRoot({
+      object_root: objectRoot,
+      domain: buildDomain(domainType, networkInfo),
+    })
+  );
 }
