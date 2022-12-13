@@ -8,7 +8,7 @@ import { sha256 } from 'hash.js/lib/hash/sha';
 import { jsonc } from 'jsonc';
 import fetch from 'node-fetch';
 import { question } from 'readline-sync';
-import { buildPathStr } from './util';
+import { buildPathStr } from './utils.test';
 
 dotenv.config()
 const vectors = jsonc.parse(

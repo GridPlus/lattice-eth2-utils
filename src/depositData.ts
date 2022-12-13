@@ -1,10 +1,17 @@
+/**
+ * Utils for preparing an ETH deposit for a new validator.
+ * 
+ * Methods:
+ * - `generate`: Generate deposit data for a given validator. Requires signature.
+ * - `exportKeystore`: Export an EIP2335 keystore for a given validator. 
+ */
 import { ByteVectorType, ContainerType, UintNumberType, } from '@chainsafe/ssz';
 import { sha256 } from '@noble/hashes/sha256';
 import { BN } from 'bn.js';
 import { Constants as SDKConstants, Client } from 'gridplus-sdk';
 import { DOMAINS, NETWORKS } from './constants';
-import { ensureHexBuffer } from './utils';
-
+import { ensureHexBuffer, buildDomain } from './utils';
+ 
 /**
  * Generate ETH deposit data for a given validator.
  * This requires a secure connection with a Lattice via `client`.
@@ -16,7 +23,7 @@ import { ensureHexBuffer } from './utils';
  * @param req - Instance of `EthDepositDataReq` containing params to build the deposit data.
  * @return JSON string containing deposit data for this validator.
  */
- export async function generate(
+export async function generate(
   client: Client,
   depositPath: number[],
   params: EthDepositDataReq
@@ -142,13 +149,13 @@ import { ensureHexBuffer } from './utils';
 }
 
 /**
- * Export an encrypted keystore (private key) from the Lattice's active wallet.
- * The keystore is formatted according to EIP2335.
- * @param client - An instance of the `gridplus-sdk` `Client`
- * @param depositPath - The derivation path of the key to export
- * @param c - The PBKDF2 iteration count (default=262144)
- * @return - JSON-stringified encrypted keystore
- */
+* Export an encrypted keystore (private key) from the Lattice's active wallet.
+* The keystore is formatted according to EIP2335.
+* @param client - An instance of the `gridplus-sdk` `Client`
+* @param depositPath - The derivation path of the key to export
+* @param c - The PBKDF2 iteration count (default=262144)
+* @return - JSON-stringified encrypted keystore
+*/
 export async function exportKeystore(
   client: Client,
   depositPath: number[],
@@ -166,54 +173,33 @@ export async function exportKeystore(
 }
 
 /**
- * @internal
- * Generate domain data for an ETH deposit.
- * This is constructed out of a domain type (DEPOSIT) and a ForkData root.
- * 
- * ForkData definition:
- * https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#forkdata
- * 
- * @param forkVersion - A four byte version constant (default=00000000)
- * @return 32 byte Buffer containing domain data
- */
- function getEthDepositDomain(
+* @internal
+* Generate domain data for an ETH deposit.
+* This is constructed out of a domain type (DEPOSIT) and a ForkData root.
+*/
+function getEthDepositDomain(
   forkVersion: Buffer,
   validatorsRoot: Buffer,
 ): Buffer {
-  if (forkVersion.length !== 4) {
-    throw new Error('`forkVersion` must be a 4-byte Buffer.');
-  } else if (validatorsRoot.length !== 32) {
-    throw new Error('`validatorsRoot` must be a 32-byte Buffer.');
-  }
-  const forkDataType = new ContainerType({
-    current_version: new ByteVectorType(4),
-    genesis_validators_root: new ByteVectorType(32),
-  });
-  const forkDataRoot = Buffer.from(forkDataType.hashTreeRoot({
-    current_version: forkVersion,
-    genesis_validators_root: validatorsRoot,
-  }));
-  // Construct the domain, see:
-  // https://github.com/ethereum/staking-deposit-cli/blob/
-  // e2a7c942408f7fc446b889097f176238e4a10a76/staking_deposit/utils/ssz.py#L42
-  const depositDomain = Buffer.alloc(32);
-  DOMAINS.DEPOSIT.copy(depositDomain, 0);
-  forkDataRoot.slice(0, 28).copy(depositDomain, 4);
-  return depositDomain;
+  return buildDomain(
+    DOMAINS.DEPOSIT,
+    forkVersion,
+    validatorsRoot,
+  );
 }
 
 /**
- * @internal
- * Get the withdrawal credentials given a key.
- * There are currently two supported types of withdrawal:
- * - 0x00: BLS key used to withdraw
- * - 0x11: ETH1 key used to withdraw
- * 
- * @param withdrawalKey - Buffer containing either BLS withdrawal pubkey (48 bytes)
- *                        or Ethereum address (20 bytes)
- * @return 32-byte Buffer containing withdrawal credentials
- */
- function getEthDepositWithdrawalCredentials(
+* @internal
+* Get the withdrawal credentials given a key.
+* There are currently two supported types of withdrawal:
+* - 0x00: BLS key used to withdraw
+* - 0x11: ETH1 key used to withdraw
+* 
+* @param withdrawalKey - Buffer containing either BLS withdrawal pubkey (48 bytes)
+*                        or Ethereum address (20 bytes)
+* @return 32-byte Buffer containing withdrawal credentials
+*/
+function getEthDepositWithdrawalCredentials(
   withdrawalKey: Buffer, // BLS pubkey of mapped withdrawal key OR ETH1 address
 ): Buffer {
   const creds = Buffer.alloc(32);

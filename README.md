@@ -108,6 +108,8 @@ If you wish to use a different mnemonic (not recommended), you must set it as yo
 
 ## Running Tests
 
+> **NOTE:** `node.js` v16 is suggested when running tests
+
 You can run all tests with:
 
 ```

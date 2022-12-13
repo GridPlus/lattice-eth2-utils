@@ -9,7 +9,7 @@ import { deriveSeedTree } from 'bls12-381-keygen';
 import { Constants as SDKConstants } from 'gridplus-sdk';
 import { question } from 'readline-sync';
 import { DepositData } from '../index';
-import { buildPathStr, checkShouldRunTests, uint8arrayToHex } from './util';
+import { buildPathStr, checkShouldRunTests, uint8arrayToHex } from './utils.test';
 
 let encPw = process.env.ENC_PW;
 
