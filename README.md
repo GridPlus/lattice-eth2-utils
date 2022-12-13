@@ -1,4 +1,4 @@
-# lattice-eth2-utils
+# 🛠️ lattice-eth2-utils
 ETH2 utils for use with the Lattice1 hardware wallet and the [`gridplus-sdk`](https://github.com/GridPlus/gridplus-sdk). These utils are wrappers over core Lattice functionality and pertain to specific ETH2 actions, such as validator deposits.
 
 Generally, these utils build messages to be signed by a BLS key and broadcast to Ethereum's consensus layer. All messages are constructed based on the reference [specification](https://github.com/ethereum/consensus-specs/tree/dev/specs). The following table lists all provided utils and their respective spec messages.
@@ -67,4 +67,55 @@ const opts = {
 };
 
 const data = await DepositData.generate(client, path, opts);
+```
+
+# 🧪 Testing
+
+> **NOTE:** All tests are made against the **current active wallet** on your Lattice. If you have a SafeCard inserted and unlocked, that is the active wallet. Otherwise it is your Lattice wallet.
+
+If you would like to get confidence around these utils before using them to do things on mainnet (a good idea!), you can run some tests.
+
+## Setting Up
+
+These tests are designed to run against production Lattice devices. Because production devices cannot export secret data like seeds, we need to make sure we configure the test suite properly or else your tests will fail.
+
+### Config Params
+
+By default the test suite will use `.env` for looking up config params. If you wish to use `.env`, you will need to create it -- you can see the format in `.env.template`.
+
+Here are the config options you can define:
+
+| Param | Description | Default Value |
+|:---|:---|:---|
+| `ENC_PW` | Your Lattice's device encryption password. You can set this on your Lattice by going to `System Preferences -> Security & Privacy -> Encryption Password`. | N/A |
+| `DEVICE_ID` | Your Lattice's device ID. You can find this on your Lattice by going to `Device ID`. | N/A |
+| `MNEMONIC` | String representing mnemonic seed phrase | `produce pool nurse odor pipe taxi next rebuild cram lamp bachelor power` |
+| `CONNECT_URL` | Lattice routing endpoint. You should stick with the default unless you've set up routing infrastructure using [Lattice Connect](https://github.com/GridPlus/lattice-connect-v2) | `https://signing.gridpl.us`
+
+### Defining Test Vectors
+
+Before you run any tests, make sure your Lattice's active wallet is using a seed that matches the test vectors in `src/__test__/vectors.json`. If your seed does not match, all of the tests will fail.
+
+To set this as your active wallet seed, is recommended you take a SafeCard you are not using, reset its seed (if necessary -- `Manage Wallets -> Reset SafeCard Wallet`), and load a mnemonic that matches `defaultMnemonic` in `vectors.json`. 
+
+If you wish to use a different mnemonic (not recommended), you must set it as your `MNEMONIC` in `.env`. You will also need to make changes to `vectors.json`. Here is a list of vector values that need to be updated and how to do that:
+
+| Vector | Source Description |
+|:---|:---|
+| `depositData.blsWithdrawals.data` | Output of [Ethereum Staking CLI](https://github.com/ethereum/staking-deposit-cli/releases/tag/v2.3.0) (`validator_keys/deposit-data-*.json`) running `./deposit existing-mnemonic` (no flags). Must match `*.eth1Withdrawals.data` in number of validators. |
+| `depositData.eth1Withdrawals.eth1Addr` | ETH1 address. Can be any valid address. |
+| `depositData.eth1Withdrawals.data` | Output of [Ethereum Staking CLI](https://github.com/ethereum/staking-deposit-cli/releases/tag/v2.3.0) (`validator_keys/deposit-data-*.json`) running `./deposit existing-mnemonic --eth1_withdrawal_address <depositData.eth1Withdrawals.eth1Addr>`. Must match `*.blsWithdrawals.data` in number of validators. | 
+
+## Running Tests
+
+You can run all tests with:
+
+```
+npm run test
+```
+
+This is a compositive of all test runners, which you can also run individually:
+
+```
+npm run test-deposit-data
 ```

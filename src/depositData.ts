@@ -142,6 +142,30 @@ import { ensureHexBuffer } from './utils';
 }
 
 /**
+ * Export an encrypted keystore (private key) from the Lattice's active wallet.
+ * The keystore is formatted according to EIP2335.
+ * @param client - An instance of the `gridplus-sdk` `Client`
+ * @param depositPath - The derivation path of the key to export
+ * @param c - The PBKDF2 iteration count (default=262144)
+ * @return - JSON-stringified encrypted keystore
+ */
+export async function exportKeystore(
+  client: Client,
+  depositPath: number[],
+  c = 262144, // Default comes from EIP2335 example
+): Promise<string> {
+  const req = {
+    schema: SDKConstants.ENC_DATA.SCHEMAS.BLS_KEYSTORE_EIP2335_PBKDF_V4,
+    params: {
+      path: depositPath,
+      c,
+    }
+  };
+  const encData = await client.fetchEncryptedData(req);
+  return JSON.stringify(JSON.parse(encData.toString()));
+}
+
+/**
  * @internal
  * Generate domain data for an ETH deposit.
  * This is constructed out of a domain type (DEPOSIT) and a ForkData root.
