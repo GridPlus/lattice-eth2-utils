@@ -13,7 +13,7 @@ import { ensureHexBuffer, buildSigningRoot } from './utils';
  * @param client - Instance of GridPlus SDK, which is already connected/paired to a target Lattice.
  * @param path - Path of deposit/validator key. Array with up to five u32 indices representing BIP39 path.
  * @param opts - Instance of `BlsToExecutionOpts` containing params to change the withdrawal credentials.
- * @returns string containing the new withdrawal credentials.
+ * @returns string containing the `SignedBLSToExecutionChange` message, which can be broadcast to a CL node.
  */
 export async function BLSToExecutionChange(
   client: Client,
@@ -90,7 +90,7 @@ export async function BLSToExecutionChange(
     signature: new ByteVectorType(96),
   });
   return Buffer.from(
-    signedBlsToExecutionChangeType.hashTreeRoot({
+    signedBlsToExecutionChangeType.serialize({
       ...blsToExecutionChangeValues,
       signature: sig,
     })
