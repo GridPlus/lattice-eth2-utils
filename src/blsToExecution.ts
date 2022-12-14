@@ -15,7 +15,7 @@ import { ensureHexBuffer, buildSigningRoot } from './utils';
  * @param opts - Instance of `BlsToExecutionOpts` containing params to change the withdrawal credentials.
  * @returns string containing the `SignedBLSToExecutionChange` message, which can be broadcast to a CL node.
  */
-export async function BLSToExecutionChange(
+export async function generate(
   client: Client,
   path: number[],
   opts: BlsToExecutionOpts,
