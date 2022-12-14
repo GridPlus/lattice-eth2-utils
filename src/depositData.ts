@@ -6,14 +6,15 @@
  * - `exportKeystore`: Export an EIP2335 keystore for a given validator. 
  */
 import { ByteVectorType, ContainerType, UintNumberType, } from '@chainsafe/ssz';
+import { AbiCoder } from '@ethersproject/abi';
 import { sha256 } from '@noble/hashes/sha256';
 import { BN } from 'bn.js';
 import { Constants as SDKConstants, Client } from 'gridplus-sdk';
-import { DOMAINS, NETWORKS } from './constants';
+import { ABIS, DOMAINS, NETWORKS } from './constants';
 import { ensureHexBuffer, buildSigningRoot } from './utils';
   
 /**
- * Generate ETH deposit data for a given validator.
+ * Generate transaction calldata for a deposit to the ETH 2.0 deposit contract.
  * This requires a secure connection with a Lattice via `client`.
  * A signing request will be made on the signing root, which is needed
  * before deposit data can be formed.
@@ -28,6 +29,95 @@ export async function generate(
   path: number[],
   opts: DepositDataOpts
 ) : Promise<string> {
+  // Get the data
+  const depositData = await buildDepositData(client, path, opts);
+  // ABI Encode the data
+  const coder = new AbiCoder();
+  // Function selector: 
+  //    deposit(bytes,bytes,bytes,bytes32)
+  // Deposit contract:
+  //    https://etherscan.io/address/0x00000000219ab540356cbb839cbe05303d7705fa#code
+  // Note the `deposit` params:
+  // /// @notice Submit a Phase 0 DepositData object.
+  // /// @param pubkey A BLS12-381 public key.
+  // /// @param withdrawal_credentials Commitment to a public key for withdrawals.
+  // /// @param signature A BLS12-381 signature.
+  // /// @param deposit_data_root The SHA-256 hash of the SSZ-encoded DepositData object.
+  // /// Used as a protection against malformed input.
+  // function deposit(
+  //   bytes calldata pubkey,
+  //   bytes calldata withdrawal_credentials,
+  //   bytes calldata signature,
+  //   bytes32 deposit_data_root
+  // ) external payable;
+  const selector = '0x22895118';
+  // Return encoded calldata
+  return selector + coder.encode(
+    ABIS.DEPOSIT,
+    [
+      '0x' + depositData.pubkey,
+      '0x' + depositData.withdrawal_credentials,
+      '0x' + depositData.signature,
+      '0x' + depositData.deposit_data_root,
+    ]
+  );
+}
+
+/**
+ * Generate a deposit data object for a given validator. Designed for use with the 
+ * official Ethereum Launchpad: https://launchpad.ethereum.org/
+ * Must be arrayified and JSON-serialized before being sent to the Launchpad.
+ * Can be combined with other objects to form a JSON file for the Launchpad. 
+ * @param client - Instance of GridPlus SDK, which is already connected/paired to a target Lattice.
+ * @param path - Path of deposit/validator key. Array with up to five u32 indices representing BIP39 path.
+ * @param opts - Instance of `DepositDataOpts` containing params to build the deposit data.
+ * @return Deposit data object for this validator.
+ */
+export async function generateObject(
+  client: Client,
+  path: number[],
+  opts: DepositDataOpts
+) : Promise<DepositData> {
+  return await buildDepositData(client, path, opts);
+}
+ 
+/**
+ * Export an encrypted keystore (private key) from the Lattice's active wallet.
+ * The keystore is formatted according to EIP2335.
+ * @param client - An instance of the `gridplus-sdk` `Client`
+ * @param path - Path for deposit/validator key. Array with up to five u32 indices representing BIP39 path.
+ * @param c - The PBKDF2 iteration count (default=262144)
+ * @return - JSON-stringified encrypted keystore
+ */
+export async function exportKeystore(
+  client: Client,
+  path: number[],
+  c = 262144, // Default comes from EIP2335 example
+): Promise<string> {
+  const req = {
+    schema: SDKConstants.ENC_DATA.SCHEMAS.BLS_KEYSTORE_EIP2335_PBKDF_V4,
+    params: {
+      path: path,
+      c,
+    }
+  };
+  const encData = await client.fetchEncryptedData(req);
+  return JSON.stringify(JSON.parse(encData.toString()));
+}
+
+/**
+ * @internal
+ * Build the deposit data for a given validator.
+ * @client - Instance of GridPlus SDK, which is already connected/paired to a target Lattice.
+ * @path - Path of deposit/validator key. Array with up to five u32 indices representing BIP39 path.
+ * @opts - Instance of `DepositDataOpts` containing params to build the deposit data.
+ * @return - Deposit data for this validator
+ */
+async function buildDepositData(
+  client: Client,
+  path: number[],
+  opts: DepositDataOpts,
+) : Promise<DepositData> {
   const { 
     amountGwei=32000000000, 
     depositCliVersion='2.3.0',
@@ -125,7 +215,7 @@ export async function generate(
     signature: sig.sig,
   }));
 
-  return JSON.stringify({
+  return {
     pubkey: depositKey.toString('hex'),
     withdrawal_credentials: withdrawalCreds.toString('hex'),
     amount: amountGwei,
@@ -135,31 +225,7 @@ export async function generate(
     fork_version: forkVersion.toString('hex'),
     network_name: networkName,
     deposit_cli_version: depositCliVersion,
-  });
-}
- 
-/**
- * Export an encrypted keystore (private key) from the Lattice's active wallet.
- * The keystore is formatted according to EIP2335.
- * @param client - An instance of the `gridplus-sdk` `Client`
- * @param path - Path for deposit/validator key. Array with up to five u32 indices representing BIP39 path.
- * @param c - The PBKDF2 iteration count (default=262144)
- * @return - JSON-stringified encrypted keystore
- */
-export async function exportKeystore(
-  client: Client,
-  path: number[],
-  c = 262144, // Default comes from EIP2335 example
-): Promise<string> {
-  const req = {
-    schema: SDKConstants.ENC_DATA.SCHEMAS.BLS_KEYSTORE_EIP2335_PBKDF_V4,
-    params: {
-      path: path,
-      c,
-    }
   };
-  const encData = await client.fetchEncryptedData(req);
-  return JSON.stringify(JSON.parse(encData.toString()));
 }
  
 /**

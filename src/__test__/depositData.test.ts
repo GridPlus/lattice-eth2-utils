@@ -1,3 +1,4 @@
+import { AbiCoder } from '@ethersproject/abi';
 import { getPublicKey } from '@noble/bls12-381';
 import {
   create as createKeystore,
@@ -8,7 +9,7 @@ import {
 import { deriveSeedTree } from 'bls12-381-keygen';
 import { Constants as SDKConstants } from 'gridplus-sdk';
 import { question } from 'readline-sync';
-import { DepositData } from '../index';
+import { DepositData, Constants } from '../index';
 import { buildPathStr, checkShouldRunTests, uint8arrayToHex } from './utils.test';
 
 let encPw = process.env.ENC_PW;
@@ -72,7 +73,6 @@ describe('[Generate Deposit Data]', () => {
           globals.vectors.depositData.eth1Withdrawals.eth1Addr
         );
       })
-
     });
   }
 })
@@ -105,8 +105,17 @@ async function validateExportedKeystore(path: number[], encData: string) {
 }
 
 async function validateDepositData(path: number[], depositData: string, withdrawalKey: string=null) {
-  const latticeData = await DepositData.generate(globals.client, path, { withdrawalKey });
-  expect(latticeData).toEqual(depositData);
+  // Check the JSON export (primarily used for Ethereum Launchpad UX)
+  const latticeData = await DepositData.generateObject(globals.client, path, { withdrawalKey });
+  expect(JSON.stringify(latticeData)).toEqual(depositData);
+  // Check that the calldata matches
+  const latticeDataCalldata = await DepositData.generate(globals.client, path, { withdrawalKey });
+  const coder = new AbiCoder();
+  const vals = coder.decode(Constants.ABIS.DEPOSIT, latticeDataCalldata.slice(10));
+  expect(vals[0].slice(2)).to.equal(latticeData.pubkey);
+  expect(vals[1].slice(2)).to.equal(latticeData.withdrawal_credentials);
+  expect(vals[2].slice(2)).to.equal(latticeData.signature);
+  expect(vals[3].slice(2)).to.equal(latticeData.deposit_data_root);
 }
 
 function getBlsPath(i) {

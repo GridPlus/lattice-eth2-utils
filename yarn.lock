@@ -103,7 +103,7 @@
     "@ethereumjs/common" "^2.4.0"
     "ethereumjs-util" "^7.1.0"
 
-"@ethersproject/abi@^5.5.0":
+"@ethersproject/abi@^5.5.0", "@ethersproject/abi@^5.7.0":
   "integrity" "sha512-351ktp42TiRcYB3H1OP8yajPeAQstMW/yCFokj/AthP9bLHzQFPlOrxOcwYEDkUAICmOHljvN4K39OMTMUa9RA=="
   "resolved" "https://registry.npmjs.org/@ethersproject/abi/-/abi-5.7.0.tgz"
   "version" "5.7.0"

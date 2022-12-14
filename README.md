@@ -5,7 +5,7 @@ Generally, these utils build messages to be signed by a BLS key and broadcast to
 
 | Action | Reference | Description |
 |:---|:---|:---|
-| [Generate Deposit Data](#generate-deposit-data) | [Phase0: `Deposit Data`](https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#depositdata) | Build a deposit record to register a validator with the network. |
+| [`DepositData`](#generate-deposit-data) | [Phase0: `Deposit Data`](https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#depositdata) | Build a deposit record to register a validator with the network. |
 
 
 ## Getting Started
@@ -18,13 +18,50 @@ Install with:
 npm install --save lattice-eth2-utils
 ```
 
-## Generate Deposit Data
+## `Deposit Data`
 
-In order to start a new validator on the Ethereum consensus layer, you will need to sign and broadcast a [`Deposit Data`](https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#depositdata) record. This is needed so you can register ownership of your deposit key, which is Ethereum's way of [preventing rogue key attacks](https://hackmd.io/@benjaminion/bls12-381#Rogue-key-attacks). Note that "deposit key" and "validator key" refer to the same BLS key, whereas the withdrawal key is different and can either be a BLS key or an ETH1 key.
+In order to start a new validator, you need to do two things:
 
-You can generate deposit data for a given validator index using a Lattice's current active wallet:
+1. Add an encrypted BLS private key (a.k.a. "keystore") to your consensus layer client so that it can make signatures for attestations/proposals using your new validator.
+2. Generate deposit data and make an on-chain deposit to the [Ethereum Deposit Contract](https://etherscan.io/address/0x00000000219ab540356cbb839cbe05303d7705fa#code). This deposit must contain 32 ETH (the deposit) as well as the deposit data you generated.
 
-> NOTE: returned `data` will be a JSON-stringified struct containing deposit data for the validator in question. You may combine several of these in an array and JSON-stringify those items again to generate deposit data that can be consumed by, for example, the [Ethereum Launchpad](https://launchpad.ethereum.org/en/).
+### 1. Exporting Encrypted Keystores
+
+Before doing the actual deposit, you should export the keystore associated with the validator you want to deposit into. This keystore contains the private key of your validator/deposit BLS key, encrypted according to [EIP2335](https://eips.ethereum.org/EIPS/eip-2335).
+
+You can export a keystore from your Lattice's active wallet based on a validator path:
+
+```ts
+import { DepositData } from 'lattice-eth2-utils'
+
+// Make sure you have a client setup
+const client = //<instance of gridplus-sdk Client>
+
+// Define the path using integers
+const path = [ 12381, 3600, 0, 0, 0];
+
+// Get the keystore. Note that by default we use a large number of iterations
+// (defined in EIP2335) so the encrypted export takes about 30 seconds!
+const keystore = await DepositData.exportKeystore(client, path);
+```
+
+Once you have your `keystore` data, you should save it to a JSON file and import it into your consensus layer client. Make sure the client processes the keystore and adds the correct pubkey before proceeding with the on-chain deposit. 
+
+### 2. Generating Deposit Data
+
+In order to start a new validator on the Ethereum consensus layer, you will need to sign and build a [`Deposit Data`](https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#depositdata) record. The contents of this record need to be included in a call to the `deposit` function of the [Ethereum Deposit Contract](https://etherscan.io/address/0x00000000219ab540356cbb839cbe05303d7705fa#code) (i.e. on the *execution* layer).
+
+There are two ways to use `lattice-eth2-utils` for generating deposit data:
+
+- Export an ABI-encoded `calldata` string which can be added to any ETH execution layer transaction in order to make the deposit yourself.
+- Export an object which can be JSON-serialized and used with the [Ethereum Launchpad](https://launchpad.ethereum.org). Note that this object can be arrayified and combined with other validators' deposit data for a better UX. You can, of course, always add one validator at a time.
+
+
+#### A. Exporting Raw Transaction Calldata
+
+> **NOTE:** If you use this option, please ensure you include the proper amount of ether in `msg.value`. *If you pass the wrong `msg.value`, your deposit transaction will fail!* By default, `DepositData` methods will use 32 ETH as the deposit amount, but you can always change it by setting your own `amountGwei` in `opts` (the third argument to `DepositData.generate` and `DepositData.generateObject`). As the name implies, this value must be in *Gwei*, not wei. 
+
+If you are comfortable forming your own on-chain transactions, the easiest way to start a validator may be to use these utils to simply export transaction calldata. This can be done like so:
 
 ```ts
 import { DepositData } from 'lattice-eth2-utils'
@@ -51,7 +88,30 @@ const opts = {
 const depositDataEth1Withdrawal = await DepositData.generate(client, path, opts);
 ```
 
-**(Optional) Setting a Network Version (non-mainnet ONLY)**
+The output will be something like:
+
+```
+0x228951180x000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000e000000000000000000000000000000000000000000000000000000000000001206a79ff9d44663a77897dcc35e6ba2db881023a781f524ed5933931464b857e3b0000000000000000000000000000000000000000000000000000000000000030835487e50af14d8167253cb55eba37b9ef1fae2ef965c7b7e1bea180cf1a7fcad816e2dee5d6bd4ff8865f6f4d0737e200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002000605cd64817aac15cf07dfff83fd5d991de847bb5ea4c1742fdc9f24ac1c49b000000000000000000000000000000000000000000000000000000000000006085bbff3d41ad5d4883f150930df2d43888aad16456497b070d0c652af95de740fc722dbc869d0063f61f46b36ea0add31787a68a1f7df40108b91c152419bc60827b01459e32b817ac3d05d2716650bfc08355cd0651e70a08d6e30db2cc71d0
+```
+
+#### B. Exporting `deposit-data.json` Object
+
+If you want to use the [Ethereum Launchpad](https://launchpad.ethereum.org), it is probably easier to use the `generateObject` option:
+
+```ts
+import { writeFileSync } from 'fs';
+
+...
+
+// Export JSON deposit data
+const depositData = await DepositData.generateObject(client, path, opts);
+
+// Arrayify all records prior to saving JSON file
+const arrayifiedDepositData = [ depositData ]
+writeFileSync('deposit-data.json', JSON.stringify(arrayifiedDepositData));
+```
+
+#### (Optional) Setting a Network Version (non-mainnet ONLY)
 
 > **⚠️ You should skip this section if you are using ETH mainnet. Default network settings will always be valid for ETH mainnet deposits.**
 
