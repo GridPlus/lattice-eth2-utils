@@ -1,6 +1,6 @@
 {
   "name": "lattice-eth2-utils",
-  "version": "0.4.0",
+  "version": "0.4.2",
   "description": "ETH2 utils for use with the Lattice1 hardware wallet",
   "repository": "git@github.com:alex-miller-0/lattice-eth2-utils.git",
   "author": "Alex Miller <asmiller1989@gmail.com>",
@@ -11,7 +11,8 @@
     "build": "tsc -p tsconfig.json",
     "clean": "rm -rf dist build",
     "test-deposit-data": "vitest src/__test__/depositData.test.ts",
-    "test": "npm run test-deposit-data"
+    "test": "npm run test-deposit-data",
+    "prerelease": "npm run build && npm run clean && npm run build"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
