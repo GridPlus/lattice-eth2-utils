@@ -11,7 +11,7 @@ export default defineConfig(() => {
       globals: true,
       testTimeout: 120000,
       threads: false,
-      setupFiles: ['./src/__test__/setup.ts'],
+      setupFiles: ['./src/__test__/setup.test.ts'],
     },
   }
 });
