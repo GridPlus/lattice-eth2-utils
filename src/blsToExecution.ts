@@ -24,7 +24,7 @@ export async function BLSToExecutionChange(
   const {
     eth1Addr,
     validatorIdx,
-    networkInfo=NETWORKS.MAINNET_GENESIS,
+    networkInfo=NETWORKS.MAINNET_CAPELLA,
   } = opts;
   if (!eth1Addr) {
     throw new Error('No `eth1Addr` value found.');
