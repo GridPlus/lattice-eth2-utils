@@ -5,6 +5,11 @@ export const NETWORKS = {
     // Empty root because there were no validators at genesis
     validatorsRoot: Buffer.alloc(32),
   },
+  MAINNET_CAPELLA: {
+    networkName: 'mainnet',
+    forkVersion: Buffer.from('0x03000000', 'hex'),
+    validatorsRoot: Buffer.alloc(32),
+  }
 };
 
 export const DOMAINS = {
