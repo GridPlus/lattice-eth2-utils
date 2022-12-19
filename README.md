@@ -81,9 +81,9 @@ const path = [ 12381, 3600, 0, 0, 0];
 const depositDataBlsWithdrawal = await DepositData.generate(client, path);
 
 // B. Generate data with withdrawal credentials assigned to the specified
-// ETH1 addreess by setting the `withdrawalKey` option
+// ETH1 addreess by setting the `withdrawTo` option
 const opts = {
-  withdrawalKey: '0x...', // My ETH1 address
+  withdrawTo: '0x...', // My ETH1 address
 };
 const depositDataEth1Withdrawal = await DepositData.generate(client, path, opts);
 ```

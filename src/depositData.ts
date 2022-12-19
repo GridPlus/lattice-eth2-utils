@@ -122,7 +122,7 @@ async function buildDepositData(
     amountGwei=32000000000, 
     depositCliVersion='2.3.0',
     networkInfo=NETWORKS.MAINNET_GENESIS,
-    withdrawalKey, 
+    withdrawTo, 
   } = opts;
   // Sanity checks
   // ---
@@ -157,9 +157,9 @@ async function buildDepositData(
  
   // If no withdrawalKey was passed, fetch the BLS one
   let withdrawalKeyBuf: Buffer;
-  if (withdrawalKey) {
+  if (withdrawTo) {
     // If a withdrawal key was provided, capture it here
-    withdrawalKeyBuf = ensureHexBuffer(withdrawalKey);
+    withdrawalKeyBuf = ensureHexBuffer(withdrawTo);
   } else {
     // Otherwise we should derive the corresponding withdrawal key.
     // The withdrawal path is just up one derivation index relative to deposit path.
