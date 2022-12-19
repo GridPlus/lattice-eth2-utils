@@ -104,14 +104,14 @@ async function validateExportedKeystore(path: number[], encData: string) {
   expect(uint8arrayToHex(refDecrypted)).toEqual(uint8arrayToHex(privKey));
 }
 
-async function validateDepositData(path: number[], depositData: string, withdrawalKey: string=null) {
+async function validateDepositData(path: number[], depositData: string, withdrawTo: string=null) {
   // Check the JSON export (primarily used for Ethereum Launchpad UX)
-  const latticeData = await DepositData.generateObject(globals.client, path, { withdrawalKey });
+  const latticeData = await DepositData.generateObject(globals.client, path, { withdrawTo });
   expect(JSON.stringify(latticeData)).toEqual(depositData);
   // Check that the calldata matches
-  const latticeDataCalldata = await DepositData.generate(globals.client, path, { withdrawalKey });
+  const latticeDataCalldata = await DepositData.generate(globals.client, path, { withdrawTo });
   const coder = new AbiCoder();
-  const vals = coder.decode(Constants.ABIS.DEPOSIT, latticeDataCalldata.slice(10));
+  const vals = coder.decode(Constants.ABIS.DEPOSIT, '0x' + latticeDataCalldata.slice(10));
   expect(vals[0].slice(2)).to.equal(latticeData.pubkey);
   expect(vals[1].slice(2)).to.equal(latticeData.withdrawal_credentials);
   expect(vals[2].slice(2)).to.equal(latticeData.signature);

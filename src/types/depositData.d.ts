@@ -1,14 +1,22 @@
 interface DepositDataOpts {
-  // (optional) BLS withdrawal key or ETH1 withdrawal address
-  withdrawalKey?: Buffer | string;
+  // If you would like to define a specific withdrawal key, you can use
+  // this param. You must do this if, for example, you want to use an ETH1
+  // address in the withdrawal credentials.
+  // If nothing is passed here, the withdrawal credentials will be
+  // generated automatically from the associated EIP2334 BLS key.
+  withdrawTo?: string;
   // Amount to be deposited in GWei (10**9 wei)
-  amountGwei: number;
-  // Network info (optional - defaults to mainnet genesis)
-  networkInfo: NetworkInfo;
+  // [Default = 32 ETH]
+  amountGwei?: number;
+  // Information about the network fork. Sometimes specific values are
+  // required to build certain consensus layer mesasages.
+  // [Default = MAINNET_GENESIS]
+  networkInfo?: NetworkInfo;
   // In order to be compatible with Ethereum's online launchpad, you need
-  // to set the CLI version. Obviously we are not using the CLI here but
-  // we are following the protocol outlined in v2.3.0.
-  depositCliVersion: string;
+  // to set a CLI version. This is associated with the Ethereum deposit CLI
+  // and is just a dummy string in the context of our module.
+  // [Default = "2.3.0"]
+  depositCliVersion?: string;
 }
 
 interface DepositData {
