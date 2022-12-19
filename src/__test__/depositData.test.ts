@@ -111,7 +111,7 @@ async function validateDepositData(path: number[], depositData: string, withdraw
   // Check that the calldata matches
   const latticeDataCalldata = await DepositData.generate(globals.client, path, { withdrawalKey });
   const coder = new AbiCoder();
-  const vals = coder.decode(Constants.ABIS.DEPOSIT, latticeDataCalldata.slice(10));
+  const vals = coder.decode(Constants.ABIS.DEPOSIT, '0x' + latticeDataCalldata.slice(10));
   expect(vals[0].slice(2)).to.equal(latticeData.pubkey);
   expect(vals[1].slice(2)).to.equal(latticeData.withdrawal_credentials);
   expect(vals[2].slice(2)).to.equal(latticeData.signature);

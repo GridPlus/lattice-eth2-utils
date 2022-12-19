@@ -60,7 +60,7 @@ export async function generate(
       '0x' + depositData.signature,
       '0x' + depositData.deposit_data_root,
     ]
-  );
+  ).slice(2); // Response is prefixed with '0x', so we slice that off
 }
 
 /**
