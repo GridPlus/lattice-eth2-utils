@@ -18,9 +18,11 @@
     "data": [{
       "withdrawalPubkey": "8e132499593b9342bc131e8a29df4d18015d9584261af085ee39dc7cb5815f0ca76981848a5e37e7dcad865e29c4cc6c",
       "derivationIdx": 0,
-      "validatorIdx": 999,
+      "validatorIdx": 18827,
       "newEth1Addr": "0xDAFEA492D9c6733ae3d56b7Ed1ADB60692c98Bc5",
-      "signedMsg": "00"
+      // Temporary result from deposit CLI working branch.
+      // Sigs match, but they changed validatorsRoot to: 0x4b363db94e286120d76eb905340fdd4e54bfe9f06bf33ff6cf5ad27f511bfe95
+      "signedMsg": {"message": {"validator_index": "18827", "from_bls_pubkey": "0x8e132499593b9342bc131e8a29df4d18015d9584261af085ee39dc7cb5815f0ca76981848a5e37e7dcad865e29c4cc6c", "to_execution_address": "0xdafea492d9c6733ae3d56b7ed1adb60692c98bc5"}, "signature": "0xa0eea187a4d16ed8544c8da84e90a79ff828abe5cea5f68a664705ca513799a40fb91ea0f5159acd208e23b5b8fe7fbe087a3a662e2434aeb9210520716bb5f9ca1dbc0f905555e4d15ce3346ff6ca1c07cf2eab631066db97a56d4c457dabb1"}
     }]
   }
 }

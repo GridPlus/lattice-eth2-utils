@@ -8,7 +8,7 @@ export const NETWORKS = {
 };
 
 export const DOMAINS = {
-  BLS_TO_EXECUTION_CHANGE: Buffer.from('0x0A000000', 'hex'),
+  BLS_TO_EXECUTION_CHANGE: Buffer.from('0A000000', 'hex'),
   DEPOSIT: Buffer.from('03000000', 'hex'),
 };
 

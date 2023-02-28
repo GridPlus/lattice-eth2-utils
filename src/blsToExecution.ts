@@ -87,10 +87,10 @@ export async function generate(
   //  dev/specs/capella/beacon-chain.md#signedblstoexecutionchange
   return JSON.stringify({
     message: {
-      validator_index: validatorIdx,
-      from_bls_pubkey: blsWithdrawalPub.toString('hex'),
-      to_execution_address: eth1AddrBuf.toString('hex'),
+      validator_index: `${validatorIdx}`,
+      from_bls_pubkey: `0x${blsWithdrawalPub.toString('hex')}`,
+      to_execution_address: `0x${eth1AddrBuf.toString('hex')}`,
     },
-    signature: sig.toString('hex'),
+    signature: `0x${sig.toString('hex')}`,
   });
 }
