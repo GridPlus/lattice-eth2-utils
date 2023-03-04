@@ -24,7 +24,7 @@ export async function generate(
   const {
     eth1Addr,
     validatorIdx,
-    networkInfo=NETWORKS.MAINNET_CAPELLA,
+    networkInfo=NETWORKS.MAINNET_GENESIS,
   } = opts;
   if (!eth1Addr) {
     throw new Error('No `eth1Addr` value found.');
@@ -81,18 +81,16 @@ export async function generate(
       blsDst: SDKConstants.SIGNING.BLS_DST.BLS_DST_POP,
     }
   };
-  const sig = await client.sign(signReq);
-  // Define the signed execution change type
+  const { sig } = await client.sign(signReq);
+  // Return the signed execution change type
   // https://github.com/ethereum/consensus-specs/blob/
   //  dev/specs/capella/beacon-chain.md#signedblstoexecutionchange
-  const signedBlsToExecutionChangeType = new ContainerType({
-    ...blsToExecutionChangeFields,
-    signature: new ByteVectorType(96),
+  return JSON.stringify({
+    message: {
+      validator_index: validatorIdx,
+      from_bls_pubkey: blsWithdrawalPub.toString('hex'),
+      to_execution_address: eth1AddrBuf.toString('hex'),
+    },
+    signature: sig.toString('hex'),
   });
-  return Buffer.from(
-    signedBlsToExecutionChangeType.serialize({
-      ...blsToExecutionChangeValues,
-      signature: sig,
-    })
-  ).toString('hex');
 }
