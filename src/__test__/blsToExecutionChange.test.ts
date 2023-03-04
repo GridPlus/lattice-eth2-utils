@@ -49,7 +49,7 @@ describe('[Change Withdrawal Credentials]', () => {
       });
 
       it('Should change withdrawal credential', async () => {
-        const signedMsgStr = await BLSToExecutionChange.generate(
+        const signedMsg = await BLSToExecutionChange.generateObject(
           globals.client,
           getBlsPath(globals.vectors.blsToExecutionChange.data[i].derivationIdx),
           {
@@ -57,7 +57,7 @@ describe('[Change Withdrawal Credentials]', () => {
             validatorIdx: globals.vectors.blsToExecutionChange.data[i].validatorIdx,
           }
         );
-        expect(signedMsgStr).to.equal(
+        expect(JSON.stringify(signedMsg)).to.equal(
           JSON.stringify(globals.vectors.blsToExecutionChange.data[i].signedMsg),
           "`SignedBLSToExecutionChange` payload does not match test vector"
         );

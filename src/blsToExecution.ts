@@ -13,13 +13,13 @@ import { ensureHexBuffer, buildSigningRoot } from './utils';
  * @param client - Instance of GridPlus SDK, which is already connected/paired to a target Lattice.
  * @param path - Path of deposit/validator key. Array with up to five u32 indices representing BIP39 path.
  * @param opts - Instance of `BlsToExecutionOpts` containing params to change the withdrawal credentials.
- * @returns string containing the `SignedBLSToExecutionChange` message, which can be broadcast to a CL node.
+ * @returns `SignedBlsToExecutionChange` object
  */
-export async function generate(
+export async function generateObject(
   client: Client,
   path: number[],
   opts: BlsToExecutionOpts,
-) : Promise<string> {
+) : Promise<SignedBlsToExecutionChange> {
   // Setup options/params
   const {
     eth1Addr,
@@ -85,12 +85,12 @@ export async function generate(
   // Return the signed execution change type
   // https://github.com/ethereum/consensus-specs/blob/
   //  dev/specs/capella/beacon-chain.md#signedblstoexecutionchange
-  return JSON.stringify({
+  return {
     message: {
       validator_index: `${validatorIdx}`,
       from_bls_pubkey: `0x${blsWithdrawalPub.toString('hex')}`,
       to_execution_address: `0x${eth1AddrBuf.toString('hex')}`,
     },
     signature: `0x${sig.toString('hex')}`,
-  });
+  };
 }
