@@ -134,7 +134,7 @@ async function buildDepositData(
   if (amountGwei < 0 || new BN(amountGwei).gte(new BN(2).pow(new BN(64)))) {
     throw new Error('`amountGwei` must be >0 and <UINT64_MAX')
   }
-  const { networkName, forkVersion, validatorsRoot } = networkInfo;
+  const { networkName, forkVersion } = networkInfo;
   if (!networkName) {
     throw new Error('No `networkName` value found in `networkInfo`.');
   }
@@ -143,11 +143,11 @@ async function buildDepositData(
   } else if (forkVersion.length !== 4) {
     throw new Error('`forkVersion` must be a 4 byte Buffer.')
   }
-  if (!validatorsRoot) {
-    throw new Error('No `validatorsRoot` value found in `networkInfo`.');
-  } else if (validatorsRoot.length !== 32) {
-    throw new Error('`validatorsRoot` must be a 32 byte Buffer.');
-  }
+  // Validators root is always empty for deposits. See reference:
+  // https://github.com/ethereum/staking-deposit-cli/blob/
+  //  ef89710443814331aa2f592067dc4d6995cc4f6e/staking_deposit/utils/ssz.py#L49
+  networkInfo.validatorsRoot = Buffer.alloc(32);
+
   // Start building data. Items should be strings. Some can be copied directly.
   // ---
   // Get the depositor pubkey
