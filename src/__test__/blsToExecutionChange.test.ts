@@ -2,6 +2,7 @@ import { getPublicKey } from '@noble/bls12-381';
 import { deriveSeedTree } from 'bls12-381-keygen';
 import { Constants as SDKConstants } from 'gridplus-sdk';
 import { BLSToExecutionChange } from '../index';
+import { getWithdrawalCredentials } from '../utils';
 import { buildPathStr, checkShouldRunTests } from './utils.test';
 
 describe('[Change Withdrawal Credentials]', () => {
@@ -23,19 +24,26 @@ describe('[Change Withdrawal Credentials]', () => {
     describe(`[Change Withdrawal Credential #${i+1}/${N}]`, () => {
       it('Should validate the BLS withdrawal pubkey', async () => {
         // Make sure exported key matches test vector
+        // Get the BLS pubkey for the withdrawal key
         const pubs = await globals.client.getAddresses({
-          startPath: getBlsPath(globals.vectors.blsToExecutionChange.data[i].derivationIdx),
+          startPath: getWithdrawalBlsPath(i),
           flag: SDKConstants.GET_ADDR_FLAGS.BLS12_381_G1_PUB,
         })
-        expect(pubs[0].toString('hex')).toEqual(
-          globals.vectors.blsToExecutionChange.data[i].withdrawalPubkey,
+        // Convert to 0x00-type withdrawal credentials and check against test vector
+        expect(getWithdrawalCredentials(pubs[0]).toString('hex')).toEqual(
+          getWithdrawalCredentials(
+            Buffer.from(
+              globals.vectors.blsToExecutionChange.data[i].message.from_bls_pubkey.slice(2),
+              'hex'
+            )
+          ).toString('hex'),
           'BLS pubkey does not match test vector!'  
         );
         // Make sure exported key matches reference derivation
         const derivedPriv = deriveSeedTree(
           globals.seed,
           buildPathStr(
-            getBlsPath(globals.vectors.blsToExecutionChange.data[i].derivationIdx)
+            getWithdrawalBlsPath(i)
           )
         );
         const derivedPub = Buffer.from(
@@ -51,14 +59,14 @@ describe('[Change Withdrawal Credentials]', () => {
       it('Should change withdrawal credential', async () => {
         const signedMsg = await BLSToExecutionChange.generateObject(
           globals.client,
-          getBlsPath(globals.vectors.blsToExecutionChange.data[i].derivationIdx),
+          getWithdrawalBlsPath(i),
           {
-            eth1Addr: globals.vectors.blsToExecutionChange.data[i].newEth1Addr,
-            validatorIdx: globals.vectors.blsToExecutionChange.data[i].validatorIdx,
+            eth1Addr: globals.vectors.blsToExecutionChange.newEth1Addr,
+            validatorIdx: globals.vectors.blsToExecutionChange.validatorIndices[i],
           }
         );
         expect(JSON.stringify(signedMsg)).to.equal(
-          JSON.stringify(globals.vectors.blsToExecutionChange.data[i].signedMsg),
+          JSON.stringify(globals.vectors.blsToExecutionChange.data[i]),
           "`SignedBLSToExecutionChange` payload does not match test vector"
         );
       });
@@ -67,6 +75,6 @@ describe('[Change Withdrawal Credentials]', () => {
   }
 })
 
-function getBlsPath(i) {
+function getWithdrawalBlsPath(i) {
   return [12381, 3600, i, 0];
 }

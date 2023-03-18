@@ -92,5 +92,12 @@ export async function generateObject(
       to_execution_address: `0x${eth1AddrBuf.toString('hex')}`,
     },
     signature: `0x${sig.toString('hex')}`,
+    metadata: {
+      network_name: networkInfo.networkName,
+      genesis_validators_root: '0x' + networkInfo.validatorsRoot.toString('hex'),
+      // This is hardcoded to ensure equivalence with the official Ethereum deposit CLI:
+      // https://github.com/ethereum/staking-deposit-cli/releases/tag/v2.5.0
+      deposit_cli_version: '2.5.0'
+    }
   };
 }

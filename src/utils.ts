@@ -1,4 +1,5 @@
 import { ByteVectorType, ContainerType, } from '@chainsafe/ssz';
+import { sha256 } from '@noble/hashes/sha256';
 
 /**
  * Make sure hex string is converted to a buffer. Removes hex prefix if present.
@@ -75,4 +76,33 @@ export function buildSigningRoot(
       domain: buildDomain(domainType, networkInfo),
     })
   );
+}
+
+/**
+ * Get the withdrawal credentials given a key.
+ * There are currently two supported types of withdrawal:
+ * - 0x00: BLS key used to withdraw
+ * - 0x11: ETH1 key used to withdraw
+ * 
+ * @param withdrawalKey - Buffer containing either BLS withdrawal pubkey (48 bytes)
+ *                        or Ethereum address (20 bytes)
+ * @return 32-byte Buffer containing withdrawal credentials
+ */
+export function getWithdrawalCredentials(
+  withdrawalKey: Buffer, // BLS pubkey of mapped withdrawal key OR ETH1 address
+): Buffer {
+  const creds = Buffer.alloc(32);
+  const keyBuf =  ensureHexBuffer(withdrawalKey);
+  if (keyBuf.length === 48) {
+    // BLS key - must be hashed first
+    creds[0] = 0;
+    Buffer.from(sha256(keyBuf)).slice(1).copy(creds, 1);
+  } else if (keyBuf.length === 20) {
+    // ETH1 key - added raw to buffer, left padded
+    creds[0] = 1;
+    keyBuf.copy(creds, 12);
+  } else {
+    throw new Error('`withdrawalKey` must be 48 byte BLS pubkey or Ethereum address.');
+  }
+  return creds;
 }

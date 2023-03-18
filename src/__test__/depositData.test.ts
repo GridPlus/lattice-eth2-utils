@@ -41,7 +41,7 @@ describe('[Generate Deposit Data]', () => {
       // Run tests
       it('Should validate BLS pubkey for validator', async () => {
         const pubs = await globals.client.getAddresses({
-          startPath: getBlsPath(i),
+          startPath: getDepositBlsPath(i),
           flag: SDKConstants.GET_ADDR_FLAGS.BLS12_381_G1_PUB,
         })
         expect(pubs[0].toString('hex')).toEqual(
@@ -55,20 +55,20 @@ describe('[Generate Deposit Data]', () => {
       })
 
       it(`Should validate export of EIP2335-encoded keystore`, async () => {
-        const encData = await DepositData.exportKeystore(globals.client, getBlsPath(i))
-        await validateExportedKeystore(getBlsPath(i), encData);
+        const encData = await DepositData.exportKeystore(globals.client, getDepositBlsPath(i))
+        await validateExportedKeystore(getDepositBlsPath(i), encData);
       });
 
       it(`Should validate generated deposit data using BLS withdrawal`, async () => {
         await validateDepositData(
-          getBlsPath(i), 
+          getDepositBlsPath(i), 
           JSON.stringify(globals.vectors.depositData.blsWithdrawals.data[i]),
         );
       });
 
       it(`Should validate generated deposit data using ETH1 withdrawal`, async () => {
         await validateDepositData(
-          getBlsPath(i), 
+          getDepositBlsPath(i), 
           JSON.stringify(globals.vectors.depositData.eth1Withdrawals.data[i]),
           globals.vectors.depositData.eth1Withdrawals.eth1Addr
         );
@@ -118,6 +118,6 @@ async function validateDepositData(path: number[], depositData: string, withdraw
   expect(vals[3].slice(2)).to.equal(latticeData.deposit_data_root);
 }
 
-function getBlsPath(i) {
+function getDepositBlsPath(i) {
   return [12381, 3600, i, 0, 0];
 }
