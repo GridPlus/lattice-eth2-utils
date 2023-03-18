@@ -151,7 +151,8 @@ const opts: BlsToExecutionOpts = {
   // Optional `networkInfo` may also be included
 }
 
-// Get a stringified JSON object which may be broadcast
+// Get a JSON object which can be written to a .json file and sent to your
+// consensus client to execute the change
 const changeJSON = await BLSToExecutionChange.generate(client, path, opts);
 ```
 
