@@ -50,7 +50,7 @@ export async function generateObject(
   // Define the execution change type
   // https://github.com/ethereum/consensus-specs/blob/
   //  dev/specs/capella/beacon-chain.md#blstoexecutionchange
-  const blsToExecutionChangeFields: BlsToExecutionChange = {
+  const blsToExecutionChangeFields = {
     // ValidatorIndex defined in phase0 spec:
     // https://github.com/ethereum/consensus-specs/blob/
     //  dev/specs/phase0/beacon-chain.md#custom-types

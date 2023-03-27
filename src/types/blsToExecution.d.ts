@@ -24,4 +24,14 @@ interface SignedBlsToExecutionChange {
   // 0x-prefixed hex string representing the BLS signature from the original
   // BLS withdrawal key on the execution change message
   signature: string,
+  metadata: SignedBlsToExecutionChangeMetadata,
+}
+
+// This type includes additional metadata, which is needed in order to
+// match the output data generated from the official Ethereum Deposit CLI:
+// https://github.com/ethereum/staking-deposit-cli/releases/tag/v2.5.0
+interface SignedBlsToExecutionChangeMetadata {
+  network_name: string,
+  genesis_validators_root: string,
+  deposit_cli_version: string,
 }
