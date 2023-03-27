@@ -7,11 +7,10 @@
  */
 import { ByteVectorType, ContainerType, UintNumberType, } from '@chainsafe/ssz';
 import { AbiCoder } from '@ethersproject/abi';
-import { sha256 } from '@noble/hashes/sha256';
 import { BN } from 'bn.js';
 import { Constants as SDKConstants, Client } from 'gridplus-sdk';
 import { ABIS, DOMAINS, NETWORKS } from './constants';
-import { ensureHexBuffer, buildSigningRoot } from './utils';
+import { ensureHexBuffer, buildSigningRoot, getWithdrawalCredentials } from './utils';
   
 /**
  * Generate transaction calldata for a deposit to the ETH 2.0 deposit contract.
@@ -134,7 +133,7 @@ async function buildDepositData(
   if (amountGwei < 0 || new BN(amountGwei).gte(new BN(2).pow(new BN(64)))) {
     throw new Error('`amountGwei` must be >0 and <UINT64_MAX')
   }
-  const { networkName, forkVersion, validatorsRoot } = networkInfo;
+  const { networkName, forkVersion } = networkInfo;
   if (!networkName) {
     throw new Error('No `networkName` value found in `networkInfo`.');
   }
@@ -143,11 +142,11 @@ async function buildDepositData(
   } else if (forkVersion.length !== 4) {
     throw new Error('`forkVersion` must be a 4 byte Buffer.')
   }
-  if (!validatorsRoot) {
-    throw new Error('No `validatorsRoot` value found in `networkInfo`.');
-  } else if (validatorsRoot.length !== 32) {
-    throw new Error('`validatorsRoot` must be a 32 byte Buffer.');
-  }
+  // Validators root is always empty for deposits. See reference:
+  // https://github.com/ethereum/staking-deposit-cli/blob/
+  //  ef89710443814331aa2f592067dc4d6995cc4f6e/staking_deposit/utils/ssz.py#L49
+  networkInfo.validatorsRoot = Buffer.alloc(32);
+
   // Start building data. Items should be strings. Some can be copied directly.
   // ---
   // Get the depositor pubkey
@@ -169,7 +168,7 @@ async function buildDepositData(
     withdrawalKeyBuf = ensureHexBuffer(withdrawalPubs[0]);
   }
   // We can now generate the withdrawal credentials
-  const withdrawalCreds = getEthDepositWithdrawalCredentials(withdrawalKeyBuf);
+  const withdrawalCreds = getWithdrawalCredentials(withdrawalKeyBuf);
 
   // Build the message root
   // https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#depositmessage
@@ -226,34 +225,4 @@ async function buildDepositData(
     network_name: networkName,
     deposit_cli_version: depositCliVersion,
   };
-}
- 
-/**
- * @internal
- * Get the withdrawal credentials given a key.
- * There are currently two supported types of withdrawal:
- * - 0x00: BLS key used to withdraw
- * - 0x11: ETH1 key used to withdraw
- * 
- * @param withdrawalKey - Buffer containing either BLS withdrawal pubkey (48 bytes)
- *                        or Ethereum address (20 bytes)
- * @return 32-byte Buffer containing withdrawal credentials
- */
-function getEthDepositWithdrawalCredentials(
-  withdrawalKey: Buffer, // BLS pubkey of mapped withdrawal key OR ETH1 address
-): Buffer {
-  const creds = Buffer.alloc(32);
-  const keyBuf =  ensureHexBuffer(withdrawalKey);
-  if (keyBuf.length === 48) {
-    // BLS key - must be hashed first
-    creds[0] = 0;
-    Buffer.from(sha256(keyBuf)).slice(1).copy(creds, 1);
-  } else if (keyBuf.length === 20) {
-    // ETH1 key - added raw to buffer, left padded
-    creds[0] = 1;
-    keyBuf.copy(creds, 12);
-  } else {
-    throw new Error('`withdrawalKey` must be 48 byte BLS pubkey or Ethereum address.');
-  }
-  return creds;
 }

@@ -37,6 +37,7 @@ if (!vectors.depositData) {
 globalThis.globals = {
   vectors: {
     depositData: vectors.depositData,
+    blsToExecutionChange: vectors.blsToExecutionChange,
   }
 }
 

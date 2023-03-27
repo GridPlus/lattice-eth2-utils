@@ -70,7 +70,7 @@ import { DepositData } from 'lattice-eth2-utils'
 const client = //<instance of gridplus-sdk Client>
 
 // Define the path using integers
-const path = [ 12381, 3600, 0, 0, 0];
+const path = [ 12381, 3600, 0, 0, 0 ];
 
 // Fetch JSON data, which can be arrayified and written to `deposit-data.json`
 // There are two options:
@@ -129,6 +129,33 @@ const opts = {
 const data = await DepositData.generate(client, path, opts);
 ```
 
+## Change Withdrawal Credentials
+
+Because withdrawals happen on the execution layer, BLS keys cannot take receipt of funds. Therefore, withdrawal credentials must map to ETH1 (execution) addresses (i.e. use the `0x01` type credential) before a validator may withdraw. Some validators may have been setup with the `0x00` BLS withdrawal credential, which must be *upgraded* prior to withdrawing. **A validator's credentials may only be changed once.**
+
+Changing the credentials is done by forming and broadcasting a [`SignedBLSToExecutionChange`](https://github.com/ethereum/consensus-specs/blob/dev/specs/capella/beacon-chain.md#signedblstoexecutionchange) payload, which can be done with these utils as follows:
+
+```ts
+import { BLSToExecutionChange } from 'lattice-eth2-utils`
+
+// Make sure you have a client setup
+const client = //<instance of gridplus-sdk Client>
+
+// Define the path using integers
+const blsWithdrawalPath = [ 12381, 3600, 0, 0 ];
+
+// Define the options
+const opts: BlsToExecutionOpts = {
+  eth1Addr: '0x...', // Execution address that will be used in updated withdrawal credentials
+  validatorIdx: 2837, // Network index of the validator whose credentials are being updated
+  // Optional `networkInfo` may also be included
+}
+
+// Get a JSON object which can be written to a .json file and sent to your
+// consensus client to execute the change
+const changeJSON = await BLSToExecutionChange.generate(client, path, opts);
+```
+
 # 🧪 Testing
 
 > **NOTE:** All tests are made against the **current active wallet** on your Lattice. If you have a SafeCard inserted and unlocked, that is the active wallet. Otherwise it is your Lattice wallet.
@@ -165,6 +192,7 @@ If you wish to use a different mnemonic (not recommended), you must set it as yo
 | `depositData.blsWithdrawals.data` | Output of [Ethereum Staking CLI](https://github.com/ethereum/staking-deposit-cli/releases/tag/v2.3.0) (`validator_keys/deposit-data-*.json`) running `./deposit existing-mnemonic` (no flags). Must match `*.eth1Withdrawals.data` in number of validators. |
 | `depositData.eth1Withdrawals.eth1Addr` | ETH1 address. Can be any valid address. |
 | `depositData.eth1Withdrawals.data` | Output of [Ethereum Staking CLI](https://github.com/ethereum/staking-deposit-cli/releases/tag/v2.3.0) (`validator_keys/deposit-data-*.json`) running `./deposit existing-mnemonic --eth1_withdrawal_address <depositData.eth1Withdrawals.eth1Addr>`. Must match `*.blsWithdrawals.data` in number of validators. | 
+| `blsToExecutionChange.data` | Output of Ethereum Staking CLI running `./deposit generate-bls-to-execution-change --chain=mainnet --language=english --mnemonic="produce pool nurse odor pipe taxi next rebuild cram lamp bachelor power" --bls_withdrawal_credentials_list="0x00605cd64817aac15cf07dfff83fd5d991de847bb5ea4c1742fdc9f24ac1c49b" --validator_start_index=0 --validator_indices="18827" --execution_address="0xDAFEA492D9c6733ae3d56b7Ed1ADB60692c98Bc5"` for the first validator and similar commands for additional validators. |
 
 ## Running Tests
 
@@ -180,4 +208,5 @@ This is a compositive of all test runners, which you can also run individually:
 
 ```
 npm run test-deposit-data
+npm run test-bls-credential-change
 ```

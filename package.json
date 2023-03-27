@@ -10,8 +10,9 @@
     "lint": "eslint src/ --ext .js,.jsx,.ts,.tsx",
     "build": "tsc -p tsconfig.json",
     "clean": "rm -rf dist build",
+    "test-bls-credential-change": "vitest src/__test__/blsToExecutionChange.test.ts",
     "test-deposit-data": "vitest src/__test__/depositData.test.ts",
-    "test": "npm run test-deposit-data",
+    "test": "npm run test-deposit-data && npm run test-bls-credential-change",
     "prerelease": "npm run build && npm run clean && npm run build"
   },
   "main": "dist/index.js",

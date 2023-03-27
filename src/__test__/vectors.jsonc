@@ -4,7 +4,64 @@
     "blsWithdrawals": {
       // Output from staking-deposit-cli using default mnemonic:
       // 'produce pool nurse odor pipe taxi next rebuild cram lamp bachelor power'
-      "data": [{"pubkey": "835487e50af14d8167253cb55eba37b9ef1fae2ef965c7b7e1bea180cf1a7fcad816e2dee5d6bd4ff8865f6f4d0737e2", "withdrawal_credentials": "00605cd64817aac15cf07dfff83fd5d991de847bb5ea4c1742fdc9f24ac1c49b", "amount": 32000000000, "signature": "85bbff3d41ad5d4883f150930df2d43888aad16456497b070d0c652af95de740fc722dbc869d0063f61f46b36ea0add31787a68a1f7df40108b91c152419bc60827b01459e32b817ac3d05d2716650bfc08355cd0651e70a08d6e30db2cc71d0", "deposit_message_root": "dab8f20ea0c783efb68f7f153adc92dfe7e5cee29cede507f826e5d866184656", "deposit_data_root": "6a79ff9d44663a77897dcc35e6ba2db881023a781f524ed5933931464b857e3b", "fork_version": "00000000", "network_name": "mainnet", "deposit_cli_version": "2.3.0"}, {"pubkey": "add68e2870b8f51c119dc52b2ace9b160812fdb5477e7aabcc99619692cc37c123240d3ac3e8e12eee739892819f9876", "withdrawal_credentials": "00759c0b6111effda756ae4d7c1b9380e2a70d897f305cfa7ad34eb92f1d12f2", "amount": 32000000000, "signature": "8e849ce2ac38b78f2750088371f76b035993a926808f39974b3da404c1671f6f39938a7ebc681bf71223b127d946e47d15f6576deb448dcb4e0a353f052d47ed4a2951c68060ca2f36007cd0be0cc6e18f999327f1502d5cfe9f67e08ae55bf9", "deposit_message_root": "be9899a3e74800a1f4d5605e34e6c527e38e009a0a790b3214f6ac6f6633218f", "deposit_data_root": "752d76d1b747cbbb2560d96b69d5ed1e217252e2a34b909b4774be41e88521f2", "fork_version": "00000000", "network_name": "mainnet", "deposit_cli_version": "2.3.0"}, {"pubkey": "82cb4d166d6b8069c39a056c4793a776117d342ecb1468de06c0b5b1800e08a87c5adca104b9388e7192ea011ef45d58", "withdrawal_credentials": "00cd2b66f72e291b1581c425172fb7f871524634044fbbd077676ac62511dd2e", "amount": 32000000000, "signature": "adcb271ff3fa1197fc0ccf1c8efeec1ebeff6281bec5c2d75c51c9000cc05b8d8e74d3e3590b2cc6a355a871e02097c1159d10f310db9751dc0810617bdfed612893012a0b18bebdca831e2ad9c84a99f7c872884d2c0d2b1cf8864b8aa88dd4", "deposit_message_root": "26e9bb3908e0f360f57c080c5448ca2ffdec7485e2d35fb592c2e03ad0d58748", "deposit_data_root": "4f34254a8e348c751ad83f612c68c09def801731ab7208fce304cdc1e19c9600", "fork_version": "00000000", "network_name": "mainnet", "deposit_cli_version": "2.3.0"}, {"pubkey": "a4d6c69fe0dbd9b55bd4c1f8c6e9790f349c34f0513608fd995fbbcaa8b57499ba212fc3e42e9a2778a9928f286a3bd0", "withdrawal_credentials": "00f9504d5318ab8010b2bec3f71ff64175450a1a04690e89ae28132ff6354a27", "amount": 32000000000, "signature": "933aaa5c704033f10286f31451dba3e3b583c6eead4413a3436ad8b20cfa33e45caa2db3f19c333fd97f914387a9a1010d6d17a4b8c360ee80d3d350f316a35c5de8d162516ff972825d173c3c1fca282600826daa9ed2cbe004f0061314f033", "deposit_message_root": "32e3d616f45390446138b1b9e930aa7a41cd3a240154af800a32e42b30fc4bd0", "deposit_data_root": "cc61c741a3b2317be1f2cb3fe2f2833204322e2275072acf6a7181441c942710", "fork_version": "00000000", "network_name": "mainnet", "deposit_cli_version": "2.3.0"}, {"pubkey": "81c1fd5aebdba764c6e7200cddee9b6a55fb4e075f34b28edcca7dc85f75179fdea8d3685ca62af803214122b252968a", "withdrawal_credentials": "005e44b2afd7cf3b5bf08ab928739672485537cbd9c02bf31a2021ea0949e06d", "amount": 32000000000, "signature": "8905b865ab2a047e639abf6e6462a50d95c5dee7ada0b4eb05daec711a3b71a182d5244d2136c18ea8b570c27dc8b5b117d76c9d3740bf13b3cf639d9c2194dd765c567a9ca37150d3fed211aa8ba03e06a9b679c84dcffc4522b0b693588727", "deposit_message_root": "880083f7567afbf47631716c8cb64b7c79acb80f8657d495dc6193e3f5fb04cf", "deposit_data_root": "d19a7a62b7026bdae4493c05dfc9b9ad8c6fc40084b06d35a8939dcaa31e8137", "fork_version": "00000000", "network_name": "mainnet", "deposit_cli_version": "2.3.0"}]
+      // The withdrawal keys are all derived in order starting at i=0 with path m/12381/3600/i/0
+      "data": [
+        {
+          "pubkey": "835487e50af14d8167253cb55eba37b9ef1fae2ef965c7b7e1bea180cf1a7fcad816e2dee5d6bd4ff8865f6f4d0737e2", 
+          "withdrawal_credentials": "00605cd64817aac15cf07dfff83fd5d991de847bb5ea4c1742fdc9f24ac1c49b", 
+          "amount": 32000000000, 
+          "signature": "85bbff3d41ad5d4883f150930df2d43888aad16456497b070d0c652af95de740fc722dbc869d0063f61f46b36ea0add31787a68a1f7df40108b91c152419bc60827b01459e32b817ac3d05d2716650bfc08355cd0651e70a08d6e30db2cc71d0", 
+          "deposit_message_root": "dab8f20ea0c783efb68f7f153adc92dfe7e5cee29cede507f826e5d866184656", 
+          "deposit_data_root": "6a79ff9d44663a77897dcc35e6ba2db881023a781f524ed5933931464b857e3b", 
+          "fork_version": "00000000", 
+          "network_name": "mainnet", 
+          "deposit_cli_version": "2.3.0"
+        }, 
+        {
+          "pubkey": "add68e2870b8f51c119dc52b2ace9b160812fdb5477e7aabcc99619692cc37c123240d3ac3e8e12eee739892819f9876", 
+          "withdrawal_credentials": "00759c0b6111effda756ae4d7c1b9380e2a70d897f305cfa7ad34eb92f1d12f2", 
+          "amount": 32000000000, 
+          "signature": "8e849ce2ac38b78f2750088371f76b035993a926808f39974b3da404c1671f6f39938a7ebc681bf71223b127d946e47d15f6576deb448dcb4e0a353f052d47ed4a2951c68060ca2f36007cd0be0cc6e18f999327f1502d5cfe9f67e08ae55bf9", 
+          "deposit_message_root": "be9899a3e74800a1f4d5605e34e6c527e38e009a0a790b3214f6ac6f6633218f", 
+          "deposit_data_root": "752d76d1b747cbbb2560d96b69d5ed1e217252e2a34b909b4774be41e88521f2", 
+          "fork_version": "00000000",
+          "network_name": "mainnet", 
+          "deposit_cli_version": "2.3.0"
+        }, 
+        {
+          "pubkey": "82cb4d166d6b8069c39a056c4793a776117d342ecb1468de06c0b5b1800e08a87c5adca104b9388e7192ea011ef45d58", 
+          "withdrawal_credentials": "00cd2b66f72e291b1581c425172fb7f871524634044fbbd077676ac62511dd2e", 
+          "amount": 32000000000, 
+          "signature": "adcb271ff3fa1197fc0ccf1c8efeec1ebeff6281bec5c2d75c51c9000cc05b8d8e74d3e3590b2cc6a355a871e02097c1159d10f310db9751dc0810617bdfed612893012a0b18bebdca831e2ad9c84a99f7c872884d2c0d2b1cf8864b8aa88dd4", 
+          "deposit_message_root": "26e9bb3908e0f360f57c080c5448ca2ffdec7485e2d35fb592c2e03ad0d58748", 
+          "deposit_data_root": "4f34254a8e348c751ad83f612c68c09def801731ab7208fce304cdc1e19c9600", 
+          "fork_version": "00000000", 
+          "network_name": "mainnet", 
+          "deposit_cli_version": "2.3.0"
+        }, 
+        {
+          "pubkey": "a4d6c69fe0dbd9b55bd4c1f8c6e9790f349c34f0513608fd995fbbcaa8b57499ba212fc3e42e9a2778a9928f286a3bd0", 
+          "withdrawal_credentials": "00f9504d5318ab8010b2bec3f71ff64175450a1a04690e89ae28132ff6354a27", 
+          "amount": 32000000000, 
+          "signature": "933aaa5c704033f10286f31451dba3e3b583c6eead4413a3436ad8b20cfa33e45caa2db3f19c333fd97f914387a9a1010d6d17a4b8c360ee80d3d350f316a35c5de8d162516ff972825d173c3c1fca282600826daa9ed2cbe004f0061314f033", 
+          "deposit_message_root": "32e3d616f45390446138b1b9e930aa7a41cd3a240154af800a32e42b30fc4bd0", 
+          "deposit_data_root": "cc61c741a3b2317be1f2cb3fe2f2833204322e2275072acf6a7181441c942710", 
+          "fork_version": "00000000", 
+          "network_name": "mainnet", 
+          "deposit_cli_version": "2.3.0"
+        }, 
+        {
+          "pubkey": "81c1fd5aebdba764c6e7200cddee9b6a55fb4e075f34b28edcca7dc85f75179fdea8d3685ca62af803214122b252968a", 
+          "withdrawal_credentials": "005e44b2afd7cf3b5bf08ab928739672485537cbd9c02bf31a2021ea0949e06d", 
+          "amount": 32000000000, 
+          "signature": "8905b865ab2a047e639abf6e6462a50d95c5dee7ada0b4eb05daec711a3b71a182d5244d2136c18ea8b570c27dc8b5b117d76c9d3740bf13b3cf639d9c2194dd765c567a9ca37150d3fed211aa8ba03e06a9b679c84dcffc4522b0b693588727", 
+          "deposit_message_root": "880083f7567afbf47631716c8cb64b7c79acb80f8657d495dc6193e3f5fb04cf", 
+          "deposit_data_root": "d19a7a62b7026bdae4493c05dfc9b9ad8c6fc40084b06d35a8939dcaa31e8137", 
+          "fork_version": "00000000", 
+          "network_name": "mainnet", 
+          "deposit_cli_version": "2.3.0"  
+        }
+      ]
     },
     "eth1Withdrawals": {
       // Output from staking-deposit-cli using specified `eth1Addr` and default mnemonic:
@@ -12,5 +69,61 @@
       "eth1Addr": "0xDAFEA492D9c6733ae3d56b7Ed1ADB60692c98Bc5",
       "data": [{"pubkey": "835487e50af14d8167253cb55eba37b9ef1fae2ef965c7b7e1bea180cf1a7fcad816e2dee5d6bd4ff8865f6f4d0737e2", "withdrawal_credentials": "010000000000000000000000dafea492d9c6733ae3d56b7ed1adb60692c98bc5", "amount": 32000000000, "signature": "a961560a3f29d8c84797d4962e9777b84b7d93f41a5cb91f4bd27cb77cccda4c2c1d0a61ea572cb6bc021092327ca8720fef0dfaec3ca9d39e0cfa52446d88d9e982a19621af463570296e1ae71fbcec82bb7e3b714a918c0b684f7b9cee1dfb", "deposit_message_root": "6b29aefe058cfa3a88542661b71d1834a568193321e75a0fe18ea0d2892e4d92", "deposit_data_root": "550e3dfc303f8e59f20c4546885af4755217b8b9a8ed995ede05652abead1220", "fork_version": "00000000", "network_name": "mainnet", "deposit_cli_version": "2.3.0"}, {"pubkey": "add68e2870b8f51c119dc52b2ace9b160812fdb5477e7aabcc99619692cc37c123240d3ac3e8e12eee739892819f9876", "withdrawal_credentials": "010000000000000000000000dafea492d9c6733ae3d56b7ed1adb60692c98bc5", "amount": 32000000000, "signature": "b58c424fc7157a98f05231cb3290e70dac103a8f76cb8d9994dc7c1b53237fea9cc45d6d9cbe243012b16c5106111abb082b72018fcd139a0979142fef1b72b6b3174a59fc87cc70ae18a8b65a506905b5b490b2719ea8fc8ebe41b208764b56", "deposit_message_root": "d72023c976a91e3b2bc1feb89c1066b879efd7570c206b71f21db78d01c3279a", "deposit_data_root": "8cb82d03ef98aa672ac126c57c8fd6b4dd32645dc5ef9c758be5d8519f0e4ec3", "fork_version": "00000000", "network_name": "mainnet", "deposit_cli_version": "2.3.0"}, {"pubkey": "82cb4d166d6b8069c39a056c4793a776117d342ecb1468de06c0b5b1800e08a87c5adca104b9388e7192ea011ef45d58", "withdrawal_credentials": "010000000000000000000000dafea492d9c6733ae3d56b7ed1adb60692c98bc5", "amount": 32000000000, "signature": "8eee141cf844d8b1c87bdc0476bde0d577f7f08d91e377f52e69e13e01ae2cced2e47006964d72d330e262d0e4ef875606acb07e076f3cc25c2ff1bb86eacb00dd9fccd0f9b2b7ab402e632d0e5a8877f60abfe0330b32c4cb2999c179bc901a", "deposit_message_root": "736a44d9eed2ad9d2755acfe9701773f5237c59b10953f87fb4cabbc32aeb5ed", "deposit_data_root": "a6835cb73aa7741354b23e6d89cee3a4a597d594b1a0c3cfa4dd17de762aa4c9", "fork_version": "00000000", "network_name": "mainnet", "deposit_cli_version": "2.3.0"}, {"pubkey": "a4d6c69fe0dbd9b55bd4c1f8c6e9790f349c34f0513608fd995fbbcaa8b57499ba212fc3e42e9a2778a9928f286a3bd0", "withdrawal_credentials": "010000000000000000000000dafea492d9c6733ae3d56b7ed1adb60692c98bc5", "amount": 32000000000, "signature": "b7936497e55004b5a6e0a232a594e0673b000c36356c01a747fd72eb0b82e8b8661a5a9af5d82665e3e545dc86340f18109f1d9eed2194f58e11f6ecadd35709a461cd888a02d0ecc8b71463c65681afab30cf946cc5d4c543580a2ba7fd213e", "deposit_message_root": "fc898e822cd25efb2b118ad509796aa853f5e43350ab4d3133478381a723704e", "deposit_data_root": "777617f1bd9f0abbaa125f9a6b3775f04c3e98e7747b756f20c817c84b0ca0e3", "fork_version": "00000000", "network_name": "mainnet", "deposit_cli_version": "2.3.0"}, {"pubkey": "81c1fd5aebdba764c6e7200cddee9b6a55fb4e075f34b28edcca7dc85f75179fdea8d3685ca62af803214122b252968a", "withdrawal_credentials": "010000000000000000000000dafea492d9c6733ae3d56b7ed1adb60692c98bc5", "amount": 32000000000, "signature": "97daf78ab5079c588837014df324581e431e69e583d30f5e8cc9a0d88f8d01b29db24c0421b6f70345fbb60b4630467d128f3a9fd8e9a1c554d10a9025059e2028d399b30be17f3b169e31da6d2b4cfd838960ff6e8582106417bdaf1de03c21", "deposit_message_root": "5e45a21cb7ce5b81ee8e9d2b6615a744ded6fcb4963cd9ec991b64b46d404f56", "deposit_data_root": "460e92356e3c78dc97d6f338ace41334fb91052ce311c3db6db90569773bb700", "fork_version": "00000000", "network_name": "mainnet", "deposit_cli_version": "2.3.0"}]
     }
+  },
+  "blsToExecutionChange": {
+    "newEth1Addr": "0xDAFEA492D9c6733ae3d56b7Ed1ADB60692c98Bc5",
+    // Array of BLS withdrawal credentials changes from the deposit CLI: https://github.com/ethereum/staking-deposit-cli/releases/tag/v2.5.0
+    // These map to the same credentials references in `depositData.blsWithdrawals.data` above.
+    // Note that `validatorIndices` map to the same indices but are random values (they come from network state so we don't need to know them for testing)
+    "validatorIndices": [ 18827, 20182, 58872, 87162, 22388 ],
+    // References created using the following command:
+    // /deposit generate-bls-to-execution-change --mnemonic="produce pool nurse odor pipe taxi next rebuild cram lamp bachelor power" --bls_withdrawal_credentials_list="0x00605cd64817aac15cf07dfff83fd5d991de847bb5ea4c1742fdc9f24ac1c49b,0x00759c0b6111effda756ae4d7c1b9380e2a70d897f305cfa7ad34eb92f1d12f2,0x00cd2b66f72e291b1581c425172fb7f871524634044fbbd077676ac62511dd2e,0x00f9504d5318ab8010b2bec3f71ff64175450a1a04690e89ae28132ff6354a27,0x005e44b2afd7cf3b5bf08ab928739672485537cbd9c02bf31a2021ea0949e06d" --validator_start_index=0 --validator_indices="18827,20182,58872,87162,22388" --execution_address="0xDAFEA492D9c6733ae3d56b7Ed1ADB60692c98Bc5"
+    "data": [
+      {
+        "message": {
+          "validator_index": "18827", 
+          "from_bls_pubkey": "0x8e132499593b9342bc131e8a29df4d18015d9584261af085ee39dc7cb5815f0ca76981848a5e37e7dcad865e29c4cc6c", 
+          "to_execution_address": "0xdafea492d9c6733ae3d56b7ed1adb60692c98bc5"
+        }, 
+        "signature": "0xa0eea187a4d16ed8544c8da84e90a79ff828abe5cea5f68a664705ca513799a40fb91ea0f5159acd208e23b5b8fe7fbe087a3a662e2434aeb9210520716bb5f9ca1dbc0f905555e4d15ce3346ff6ca1c07cf2eab631066db97a56d4c457dabb1", 
+        "metadata": {"network_name": "mainnet", "genesis_validators_root": "0x4b363db94e286120d76eb905340fdd4e54bfe9f06bf33ff6cf5ad27f511bfe95", "deposit_cli_version": "2.5.0"}
+      }, 
+      {
+        "message": {
+          "validator_index": "20182", 
+          "from_bls_pubkey": "0xb9a91f33de00ee78dc3a954740e715bd6fce2b5112e372cc7a765ca3dcb4701dead554f2793ec30eca0e2d762bed76ef", 
+          "to_execution_address": "0xdafea492d9c6733ae3d56b7ed1adb60692c98bc5"
+        }, 
+        "signature": "0x94ea525548eed6ae306105c6afcc7653e3f9a8411819780fc91011c9f6078f34060914adf0fe344d42afaa127eea3ae20bb22ee944769743a585667fc51d58f0f988fbfb0fa6561f02726410d9156a919bbac587f672063c672008822ebc2823", 
+        "metadata": {"network_name": "mainnet", "genesis_validators_root": "0x4b363db94e286120d76eb905340fdd4e54bfe9f06bf33ff6cf5ad27f511bfe95", "deposit_cli_version": "2.5.0"}
+      }, 
+      {
+        "message": {
+          "validator_index": "58872", 
+          "from_bls_pubkey": "0xb2ed165d68aa4dfaef81f412cb821759d5a4ab2344b38e1c8207f49c2d792555fd0bde5eb364556e107e28e542e8bb08", 
+          "to_execution_address": "0xdafea492d9c6733ae3d56b7ed1adb60692c98bc5"
+        }, 
+        "signature": "0x8c761e83e661df6a06a4488b17339df32fd45be48a6d4e1b3f556ce50dd5a7a4f5584c0302741b179519ce9bf6f4f8ab087fbafacce4821c3bf4d3d00b9f12cee63fea0166b0fe5707c3d60afa177488bc3f77876656b9a811e0bc9c032d1073", 
+        "metadata": {"network_name": "mainnet", "genesis_validators_root": "0x4b363db94e286120d76eb905340fdd4e54bfe9f06bf33ff6cf5ad27f511bfe95", "deposit_cli_version": "2.5.0"}
+      }, 
+      {
+        "message": {
+          "validator_index": "87162", 
+          "from_bls_pubkey": "0xb8c07fd7777056ef8a54a2cea77a9e89d466a27d1e2d527eee22faf83a607fd5897217b924c360bd494164ce834bbb13", 
+          "to_execution_address": "0xdafea492d9c6733ae3d56b7ed1adb60692c98bc5"
+        }, 
+        "signature": "0xaaec58395a0f56995d138f6cc7fd076201f32cbb19624819f04a577e61d42ad3e796f584509a6e940121ae1093363cce19daac4f14c4d48e53566c1446af3ee802c91b817fdfb5f19da70c6fe4de9f9dca605b34bb75695bfdc1890439b2b17f", 
+        "metadata": {"network_name": "mainnet", "genesis_validators_root": "0x4b363db94e286120d76eb905340fdd4e54bfe9f06bf33ff6cf5ad27f511bfe95", "deposit_cli_version": "2.5.0"}
+      }, 
+      {
+        "message": {
+          "validator_index": "22388", 
+          "from_bls_pubkey": "0xa1d2b14c87b00e41af627dcdc1e456b3baa891a821e4ca1f778e3af07a3e385d09956874aca7cbf3729fdb830f72034b", 
+          "to_execution_address": "0xdafea492d9c6733ae3d56b7ed1adb60692c98bc5"
+        }, 
+        "signature": "0xab5c57c058f5992f79eb056661db962712b5cbfe56b8195fbc9a927b664b6decf3be73f5d6024b1f6e6f46a540fe8c8e1144ac730de3b5ff26a0c8c3641006f6675ef9f842ec2a8c72c68068c35eccac2b9b88158cf1f55bedf77a8ac9143eed", 
+        "metadata": {"network_name": "mainnet", "genesis_validators_root": "0x4b363db94e286120d76eb905340fdd4e54bfe9f06bf33ff6cf5ad27f511bfe95", "deposit_cli_version": "2.5.0"}
+      }
+    ]
   }
 }
