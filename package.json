@@ -1,6 +1,6 @@
 {
   "name": "lattice-eth2-utils",
-  "version": "0.4.3",
+  "version": "0.5.0",
   "description": "ETH2 utils for use with the Lattice1 hardware wallet",
   "repository": "git@github.com:alex-miller-0/lattice-eth2-utils.git",
   "author": "Alex Miller <asmiller1989@gmail.com>",
