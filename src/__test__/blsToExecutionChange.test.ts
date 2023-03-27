@@ -2,7 +2,7 @@ import { getPublicKey } from '@noble/bls12-381';
 import { deriveSeedTree } from 'bls12-381-keygen';
 import { Constants as SDKConstants } from 'gridplus-sdk';
 import { BLSToExecutionChange } from '../index';
-import { getWithdrawalCredentials } from '../utils';
+import { ensureHexBuffer, getWithdrawalCredentials } from '../utils';
 import { buildPathStr, checkShouldRunTests } from './utils.test';
 
 describe('[Change Withdrawal Credentials]', () => {
@@ -32,9 +32,8 @@ describe('[Change Withdrawal Credentials]', () => {
         // Convert to 0x00-type withdrawal credentials and check against test vector
         expect(getWithdrawalCredentials(pubs[0]).toString('hex')).toEqual(
           getWithdrawalCredentials(
-            Buffer.from(
-              globals.vectors.blsToExecutionChange.data[i].message.from_bls_pubkey.slice(2),
-              'hex'
+            ensureHexBuffer(
+              globals.vectors.blsToExecutionChange.data[i].message.from_bls_pubkey
             )
           ).toString('hex'),
           'BLS pubkey does not match test vector!'  

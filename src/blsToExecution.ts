@@ -33,6 +33,9 @@ export async function generateObject(
   }
   // Convert eth1Addr to a Buffer
   const eth1AddrBuf = ensureHexBuffer(eth1Addr);
+  if (eth1AddrBuf.length !== 20) {
+    throw new Error('Invalid ETH1 address');
+  }
 
   // First get BLS withdrawal key from the Lattice
   const pubs = await client.getAddresses({ 
@@ -40,11 +43,14 @@ export async function generateObject(
     flag: SDKConstants.GET_ADDR_FLAGS.BLS12_381_G1_PUB, 
   });
   const blsWithdrawalPub = ensureHexBuffer(pubs[0]);
+  if (blsWithdrawalPub.length !== 48) {
+    throw new Error('Invalid BLS withdrawal public key exported from Lattice');
+  }
 
   // Define the execution change type
   // https://github.com/ethereum/consensus-specs/blob/
   //  dev/specs/capella/beacon-chain.md#blstoexecutionchange
-  const blsToExecutionChangeFields = {
+  const blsToExecutionChangeFields: BlsToExecutionChange = {
     // ValidatorIndex defined in phase0 spec:
     // https://github.com/ethereum/consensus-specs/blob/
     //  dev/specs/phase0/beacon-chain.md#custom-types

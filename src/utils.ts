@@ -82,7 +82,7 @@ export function buildSigningRoot(
  * Get the withdrawal credentials given a key.
  * There are currently two supported types of withdrawal:
  * - 0x00: BLS key used to withdraw
- * - 0x11: ETH1 key used to withdraw
+ * - 0x01: ETH1 key used to withdraw
  * 
  * @param withdrawalKey - Buffer containing either BLS withdrawal pubkey (48 bytes)
  *                        or Ethereum address (20 bytes)
